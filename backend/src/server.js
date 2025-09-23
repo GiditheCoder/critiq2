@@ -28,7 +28,14 @@ app.use((req, res, next) => {
   express.json()(req, res, next); // Apply JSON parsing for other routes
 });
 
-
+// Add this before your API routes
+app.get("/", (req, res) => {
+  res.json({ 
+    message: "Backend API is running", 
+    status: "healthy",
+    endpoints: ["/api/health", "/api/votes", "/api/user_votes"]
+  });
+});
 
 
 // ---------- Health Check ----------
