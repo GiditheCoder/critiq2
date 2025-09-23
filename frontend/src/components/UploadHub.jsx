@@ -75,7 +75,7 @@ const UploadHub = () => {
 
     try {
       setLoading(true);
-      const res = await fetch("http://localhost:5001/api/song_details", {
+      const res = await fetch("https://critiq-backend-oqye.onrender.com/api/song_details", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),

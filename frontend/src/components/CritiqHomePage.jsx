@@ -43,7 +43,7 @@ const CritiqHomePage = () => {
   useEffect(() => {
     const fetchSongs = async () => {
       try {
-        const res = await fetch("http://localhost:5001/api/song_details");
+        const res = await fetch("https://critiq-backend-oqye.onrender.com/api/song_details");
         if (!res.ok) throw new Error("Failed to fetch songs");
         setSongs(await res.json());
       } catch (err) {
@@ -59,7 +59,7 @@ const CritiqHomePage = () => {
   useEffect(() => {
     const fetchVotes = async () => {
       try {
-        const res = await fetch("http://localhost:5001/api/votes");
+        const res = await fetch("https://critiq-backend-oqye.onrender.com/api/votes");
         if (!res.ok) throw new Error("Failed to fetch votes");
         const data = await res.json();
         const map = data.reduce((acc, v) => {
@@ -80,7 +80,7 @@ const CritiqHomePage = () => {
     const fetchUserVotes = async () => {
       try {
         const res = await fetch(
-          `http://localhost:5001/api/user_votes?userId=${encodeURIComponent(user.id)}`
+          `https://critiq-backend-oqye.onrender.com/api/user_votes?userId=${encodeURIComponent(user.id)}`
         );
         if (!res.ok) throw new Error("Failed to fetch user votes");
         const data = await res.json();
@@ -118,7 +118,7 @@ const CritiqHomePage = () => {
     }));
 
     try {
-      await fetch("http://localhost:5001/api/user_votes", {
+      await fetch("https://critiq-backend-oqye.onrender.com/api/user_votes", {
         method: hasVoted ? "DELETE" : "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userId: user.id, songId }),
