@@ -9,6 +9,7 @@ import { Webhook } from "svix";
 import { Clerk } from "@clerk/clerk-sdk-node";
 
 
+
 const app = express();
 const PORT = ENV.PORT || 8001;
 export const clerkClient = new Clerk({
@@ -16,7 +17,7 @@ export const clerkClient = new Clerk({
 });
 const CLERK_WEBHOOK_SECRET = ENV.CLERK_WEBHOOK_SECRET;
 
-// if (ENV.NODE_ENV === "production") job.start();
+if (ENV.NODE_ENV === "production") job.start();
 
 app.use(cors());
 
