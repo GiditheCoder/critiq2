@@ -34,7 +34,7 @@ app.get("/", (req, res) => {
   res.json({ 
     message: "Backend API is running", 
     status: "healthy",
-    endpoints: ["/api/health", "/api/votes", "/api/user_votes"]
+    endpoints: ["/api/health", "/api/votes", "/api/user_votes", "/api/artiste_details", "/api/user_details", "/api/song_details"]
   });
 });
 
