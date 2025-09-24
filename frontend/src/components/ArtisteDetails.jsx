@@ -79,7 +79,7 @@ const ArtisteDetails = () => {
     if (bioError) return; // stop submission if bio too long
 
     try {
-      const res = await fetch('https://critiq-backend-oqye.onrender.com/api/artiste_details', {
+      const res = await fetch('https://critiq-backend-6v3f.onrender.com/api/artiste_details', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),

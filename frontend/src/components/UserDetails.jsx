@@ -237,7 +237,7 @@ const UserDetails = () => {
     setIsSubmitting(true); // dim button immediately
 
     try {
-      const res = await fetch('https://critiq-backend-oqye.onrender.com/api/user_details', {
+      const res = await fetch('https://critiq-backend-6v3f.onrender.com/api/user_details', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),

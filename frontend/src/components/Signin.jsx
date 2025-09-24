@@ -51,7 +51,7 @@ const Signin = () => {
 
       if (finalAttempt.status === "complete" && finalAttempt.createdSessionId) {
         // ✅ Check role on your backend
-        const res = await fetch("http://localhost:5001/api/check-role", {
+        const res = await fetch("https://critiq-backend-6v3f.onrender.com/api/check-role", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ sessionId: finalAttempt.createdSessionId }),
