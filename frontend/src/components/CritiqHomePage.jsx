@@ -93,11 +93,9 @@ const CritiqHomePage = () => {
   }, [user?.id]);
 
   const handleLogout = async () => {
-    try {
-      await signOut();
-    } catch (e) {
-      console.error("Logout failed:", e);
-    }
+   
+      await signOut({redirectUrl : "/"});
+    
   };
 
   const handleRoute = () => navigate("/artistehub");

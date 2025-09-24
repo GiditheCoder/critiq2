@@ -16,6 +16,7 @@ export const clerkClient = new Clerk({
   secretKey: ENV.CLERK_SECRET_KEY, // use the new secret key env variable
 });
 const CLERK_WEBHOOK_SECRET = ENV.CLERK_WEBHOOK_SECRET;
+const router = express.Router();
 
 if (ENV.NODE_ENV === "production") job.start();
 
@@ -34,7 +35,7 @@ app.get("/", (req, res) => {
   res.json({ 
     message: "Backend API is running", 
     status: "healthy",
-    endpoints: ["/api/health", "/api/votes", "/api/user_votes", "/api/artiste_details", "/api/user_details", "/api/song_details"]
+    endpoints: ["/api/health", "/api/votes", "/api/user_votes", "/api/artiste_details", "/api/user_details", "/api/song_details", "/api/check-role"]
   });
 });
 
@@ -263,6 +264,7 @@ app.get("/api/song_details", async (req, res) => {
 });
 
 
+
 // ---------- Clerk Webhook ----------
 app.post(
   "/api/clerk-webhook",
@@ -270,10 +272,7 @@ app.post(
   async (req, res) => {
     try {
       const wh = new Webhook(CLERK_WEBHOOK_SECRET);
-      // req.body is a Buffer here
-      const payload = req.body; // keep as Buffer
-
-      console.log("📦 Raw payload string:", payload.toString("utf8"));
+      const payload = req.body; // Buffer
 
       const headers = {
         "svix-id": req.header("svix-id"),
@@ -281,29 +280,30 @@ app.post(
         "svix-signature": req.header("svix-signature"),
       };
 
-      console.log("🔑 Svix headers:", headers);
-
-      // Verify webhook
+      // ✅ Verify Clerk webhook
       const evt = wh.verify(payload, headers);
       console.log("🔔 Webhook received:", evt.type);
 
       if (evt.type === "user.created") {
         const { id, unsafe_metadata } = evt.data;
 
+        // default role is "listener"
         const role =
           unsafe_metadata?.chosenRole === "artiste" ? "artiste" : "listener";
 
-        // Small delay to ensure user exists in Clerk backend
+        // delay ensures Clerk finishes user provisioning
         await new Promise((resolve) => setTimeout(resolve, 1000));
 
         try {
+          // ✅ Update Clerk user metadata
           await clerkClient.users.updateUser(id, {
             publicMetadata: { role },
           });
+
           console.log(`✅ Assigned role "${role}" to user ${id}`);
         } catch (err) {
           console.error(
-            `⚠️ Could not update user ${id}. They may not exist yet:`,
+            `⚠️ Could not update user ${id}:`,
             err.errors || err.message
           );
         }
@@ -318,6 +318,28 @@ app.post(
 );
 
 
+// -- check role
+app.post("/api/check-role", async (req, res) => {
+  try {
+    const { sessionId } = req.body;
+    if (!sessionId) {
+      return res.status(400).json({ error: "Missing sessionId" });
+    }
+
+    const session = await clerkClient.sessions.getSession(sessionId);
+    if (!session || !session.userId) {
+      return res.status(400).json({ error: "Invalid or expired session" });
+    }
+
+    const user = await clerkClient.users.getUser(session.userId);
+    const role = user?.publicMetadata?.role || "listener";
+
+    return res.json({ role });
+  } catch (err) {
+    console.error("❌ Error checking role:", err);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+});
 
 
 // ---------- Start Server ----------

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useSignIn, useAuth } from '@clerk/clerk-react';
+import { useSignIn, useAuth, useClerk , useUser } from '@clerk/clerk-react';
 import { useNavigate } from 'react-router-dom';
 import critiqLogo from '../images/critiq-logo.png';
 import GoogleImg from '../images/google.png';
@@ -12,59 +12,76 @@ const Signin = () => {
   const navigate = useNavigate();
   const { isSignedIn } = useAuth();
   const { signIn, setActive, isLoaded: signInLoaded } = useSignIn();
+  const { signOut } = useClerk();
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const { user } = useUser();
 
   const handleSelectScreen = () => {
     navigate('/signup');
   };
 
- const handleSignIn = async () => {
-  if (!email || !password) return alert("Please fill in all fields");
-  if (!signInLoaded) return;
+  console.log("Signed in?", isSignedIn);
 
-  setLoading(true);
-  try {
-    const signInAttempt = await signIn.create({
-      identifier: email,
-      password,
-      strategy: "password",
-    });
+  const handleSignIn = async () => {
+    if (!email || !password) return alert("Please fill in all fields");
+    if (!signInLoaded) return;
 
-    let finalAttempt = signInAttempt;
-    if (finalAttempt.status === "needs_first_factor") {
-      finalAttempt = await signIn.attemptFirstFactor({
-        strategy: "password",
+    setLoading(true);
+    try {
+      // 👀 Debug: show what you’re about to send
+      console.log("Trying to sign in with:", { email, password });
+
+      const signInAttempt = await signIn.create({
+        identifier: email,
         password,
+        strategy: "password",
       });
-    }
 
-    if (finalAttempt.status === "complete" && finalAttempt.createdSessionId) {
-      // 👉 Fetch the user object to check their role
-      const { user } = finalAttempt;
-      const role = user?.publicMetadata?.role;
-
-      if (role !== "listener") {
-        alert("This account is not a listener account.");
-        return; // 🚫 Don't call setActive
+      let finalAttempt = signInAttempt;
+      if (finalAttempt.status === "needs_first_factor") {
+        finalAttempt = await signIn.attemptFirstFactor({
+          strategy: "password",
+          password,
+        });
       }
 
-      await setActive({ session: finalAttempt.createdSessionId });
-      navigate("/works", { replace: true });
-    } else {
-      alert("Sign in failed");
-    }
-  } catch (err) {
-    console.error(err);
-    alert(err?.errors?.[0]?.message || "Sign in failed");
-  } finally {
-    setLoading(false);
-  }
-};
+      if (finalAttempt.status === "complete" && finalAttempt.createdSessionId) {
+        // ✅ Check role on your backend
+        const res = await fetch("http://localhost:5001/api/check-role", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ sessionId: finalAttempt.createdSessionId }),
+        });
 
- 
+        const data = await res.json();
+        const role = data?.role;
+        console.log("Role from backend:", role);
+
+        if (role !== "listener") {
+          alert("This account is not a listener account.");
+          await signOut();
+          return;
+        }
+
+        // ✅ Activate session only after role is confirmed
+        await setActive({ session: finalAttempt.createdSessionId });
+        navigate("/works", { replace: true });
+      } else {
+        alert("Sign in failed");
+      }
+    } catch (err) {
+      // 👀 Debug: show full Clerk error
+      console.error("❌ Clerk sign-in error:", err);
+      alert(err?.errors?.[0]?.message || "Sign in failed");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleGoogleSignIn = async () => {
     if (isSignedIn) {
       alert('You are already signed in');
@@ -197,3 +214,4 @@ const Signin = () => {
 };
 
 export default Signin;
+
