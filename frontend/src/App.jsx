@@ -30,7 +30,16 @@ import SsoCallback from './components/SsoCallback'
 import ArtisteHub from './components/ArtisteHub'
 import UploadHub from './components/UploadHub'
 import SuccessfulUploadHub from './components/SuccessfulUploadHub'
-// import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/clerk-react';
+import FailedSignUpScreen from './components/FailedSignUpScreen'
+import FailedSignInScreen from './components/FailedSignInScreen'
+import ForgotPassword from './components/ForgotPassword'
+import SetNewPassword from './components/SetNewPassword'
+import PasswordUpdated from './components/PasswordUpdated'
+import LoginSuccess from './components/LoginSuccess'
+import Profile from './components/Profile'
+import MyVotes from './components/MyVotes'
+import LeaderBoardNew from './components/LeaderBoardNew'
+import Layout from './components/LayOut'
 
 const App = () => {
   return (
@@ -66,7 +75,7 @@ const App = () => {
       <Route path="/settings" element={<SettingsSection />} />
        <Route path="/verifyScreen" element={<VerifyEmailScreen />} />
         <Route path="/verifiedPage" element={<VerificationPage />} />
-         <Route path="/homePage" element={<CritiqHomePage />} />
+      
 
 
 
@@ -76,6 +85,54 @@ const App = () => {
       <Route path="/successful-upload" element={<SuccessfulUploadHub />} />
 
  
+        {/* for failed sign up and sign in screen */}
+      <Route path="/failed-signup" element={<FailedSignUpScreen />} />
+      <Route path="/failed-signin" element={<FailedSignInScreen />} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Route path="/set-new-password" element={<SetNewPassword />} />
+      <Route path="/password-updated" element={<PasswordUpdated />} />
+      <Route path="/login-success" element={<LoginSuccess />} />
+
+      {/* the routes */}
+         {/* <Route path="/homePage" element={<CritiqHomePage />} />
+      <Route path="/profile-page" element={<Profile/>} />
+       <Route path="/myvotes-page" element={<MyVotes/>} />
+        <Route path="/leaderboard-page" element={<LeaderBoardNew/>} /> */}
+
+      {/* the nav-wrapped pages */}
+  <Route
+    path="/homePage"
+    element={
+      <Layout>
+        <CritiqHomePage />
+      </Layout>
+    }
+  />
+  <Route
+    path="/myvotes-page"
+    element={
+      <Layout>
+        <MyVotes />
+      </Layout>
+    }
+  />
+  <Route
+    path="/leaderboard-page"
+    element={
+      <Layout>
+        <LeaderBoardNew />
+      </Layout>
+    }
+  />
+  <Route
+    path="/profile-page"
+    element={
+      <Layout>
+        <Profile />
+      </Layout>
+    }
+  />
+    
 
     
     </Routes>

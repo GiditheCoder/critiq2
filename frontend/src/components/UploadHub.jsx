@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useUser } from "@clerk/clerk-react";
 import Select from "react-select";
 import { useNavigate } from "react-router-dom";
@@ -36,6 +36,7 @@ const customStyles = {
 const UploadHub = () => {
   const navigate = useNavigate();
   const { user, isLoaded } = useUser();
+  const fileInputRef = useRef(null); // 🔹 ref to reset input
 
   const [formData, setFormData] = useState({
     title: "",
@@ -43,11 +44,13 @@ const UploadHub = () => {
     genre: "",
     nationality: "",
   });
+  const [imageFile, setImageFile] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState(null);
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // 🔹 Prefill artist name from Clerk user.username
+  // Prefill artist name from Clerk user.username
   useEffect(() => {
     if (isLoaded && user) {
       const defaultName =
@@ -69,30 +72,128 @@ const UploadHub = () => {
     setFormData((prev) => ({ ...prev, [field]: option ? option.value : "" }));
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError(null);
+  // handle file input change
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
 
-    try {
-      setLoading(true);
-      const res = await fetch("https://critiq-backend-oqye.onrender.com/api/song_details", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
+    if (previewUrl) {
+      URL.revokeObjectURL(previewUrl);
+    }
 
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message || "Upload failed");
-
-      console.log("Inserted row:", data.data);
-      navigate("/successful-upload");
-    } catch (err) {
-      setError(err.message);
-      console.error(err);
-    } finally {
-      setLoading(false);
+    if (file) {
+      setImageFile(file);
+      setPreviewUrl(URL.createObjectURL(file));
+    } else {
+      setImageFile(null);
+      setPreviewUrl(null);
     }
   };
+
+  // cancel image
+  const handleRemoveImage = () => {
+    setImageFile(null);
+
+    if (previewUrl) {
+      URL.revokeObjectURL(previewUrl);
+    }
+    setPreviewUrl(null);
+
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
+  // cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (previewUrl) {
+        URL.revokeObjectURL(previewUrl);
+      }
+    };
+  }, [previewUrl]);
+
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+  //   setError(null);
+
+  //   try {
+  //     setLoading(true);
+
+  //     const form = new FormData();
+  //     form.append("title", formData.title);
+  //     form.append("name", formData.name);
+  //     form.append("genre", formData.genre);
+  //     form.append("nationality", formData.nationality);
+  //     form.append("image", imageFile);
+  
+
+  //     const res = await fetch("https://critiq-backend-6v3f.onrender.com/api/song_details", {
+  //       method: "POST",
+  //       body: form,
+  //     });
+
+  //     const data = await res.json();
+  //     if (!res.ok) throw new Error(data.message || "Upload failed");
+
+  //     console.log("Inserted row:", data.data);
+  //     navigate("/successful-upload");
+  //   } catch (err) {
+  //     setError(err.message);
+  //     console.error(err);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  setError(null);
+
+  try {
+    setLoading(true);
+
+    const form = new FormData();
+    form.append("title", formData.title);
+    form.append("name", formData.name);
+    form.append("genre", formData.genre);
+    form.append("nationality", formData.nationality);
+
+    if (imageFile) {
+      form.append("image", imageFile); // 👈 key name MUST match multer.single("image")
+    }
+
+    console.log("📤 Sending form data:", {
+      title: formData.title,
+      name: formData.name,
+      genre: formData.genre,
+      nationality: formData.nationality,
+      image: imageFile ? imageFile.name : "no image",
+    });
+
+    const res = await fetch(
+      "https://critiq-backend-6v3f.onrender.com/api/song_details",
+      {
+        method: "POST",
+        body: form, // 👈 do NOT add headers, browser auto-handles boundaries
+      }
+    );
+
+    const data = await res.json();
+    console.log("📥 Backend response:", data);
+
+    if (!res.ok) {
+      throw new Error(data.message || "Upload failed");
+    }
+
+    console.log("✅ Upload successful");
+    navigate("/successful-upload");
+  } catch (err) {
+    console.error("❌ Frontend error:", err);
+    setError(err.message);
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div className="min-h-screen bg-[#0D0C1D] text-white flex flex-col items-center py-10 px-6">
@@ -124,7 +225,7 @@ const UploadHub = () => {
             type="text"
             name="name"
             placeholder="Your Artist Name"
-               disabled     
+            disabled
             value={formData.name}
             onChange={handleChange}
             className="w-full px-4 py-3 rounded bg-transparent border border-gray-600 focus:border-purple-500 outline-none"
@@ -162,6 +263,36 @@ const UploadHub = () => {
             isClearable
             menuPortalTarget={document.body}
           />
+        </div>
+
+        {/* Image Upload */}
+        <div>
+          <label className="block text-sm text-gray-300 mb-2">Upload Image</label>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            onChange={handleFileChange}
+            className="w-full px-4 py-3 rounded bg-transparent border border-gray-600 focus:border-purple-500 outline-none"
+          />
+
+          {/* Preview */}
+          {previewUrl && (
+            <div className="relative mt-4 w-32 h-32">
+              <img
+                src={previewUrl}
+                alt="Preview"
+                className="w-full h-full object-cover rounded-lg border border-gray-700"
+              />
+              <button
+                type="button"
+                onClick={handleRemoveImage}
+                className="absolute top-1 right-1 bg-red-500 text-white w-6 h-6 flex items-center justify-center rounded-full text-sm"
+              >
+                ✕
+              </button>
+            </div>
+          )}
         </div>
 
         <button

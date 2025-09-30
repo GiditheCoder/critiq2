@@ -57,7 +57,7 @@ const Top10 = () => {
   return (
     <div className="text-white p-6">
       <div className="mb-6">
-        <h2 className="text-2xl font-bold mb-2 bg-gradient-to-r from-pink-400 to-purple-400 bg-clip-text text-transparent">Top 10</h2>
+        <h2 className="text-2xl font-bold mb-2  text-[white] ">Top 10</h2>
         <p className="text-gray-400 text-sm">Most popular artists this week</p>
       </div>
       

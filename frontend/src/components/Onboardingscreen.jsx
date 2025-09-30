@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
 import critiqLogo from '../images/critiq-logo.png';
+import barLogo from '../images/bar-graph.png';
 import { useNavigate } from 'react-router-dom';
 
 const OnboardingScreen = () => {
@@ -11,6 +12,7 @@ const OnboardingScreen = () => {
   const [loaded, setLoaded] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
+  // the useEffect 
   useEffect(() => {
     const timer = setTimeout(() => {
       setLoading(false);
@@ -20,6 +22,7 @@ const OnboardingScreen = () => {
     return () => clearTimeout(timer);
   }, []);
 
+  // handle the role 
   const handleRoleScreen = () => {
     setIsLoading(true);
     setTimeout(() => {
@@ -30,25 +33,41 @@ const OnboardingScreen = () => {
   return (
     <div className="min-h-screen bg-[#0F0F1C] flex flex-col items-center justify-center px-4 sm:px-8 relative">
       {/* Logo Section */}
-      <div className="mb-12 sm:mb-16 lg:mb-20">
-        {loading ? (
-          <Skeleton
-            height={200}
-            width={200}
-            baseColor="#A259FF"
-            highlightColor="#E2CCFF"
-            style={{ opacity: 0.2 }}
-          />
-        ) : (
-          <img
-            src={critiqLogo}
-            alt="Critiq Logo"
-            className={`w-40 sm:w-64 lg:w-[300px] h-auto object-contain transition-opacity duration-700 ease-in-out ${
-              loaded ? 'opacity-100' : 'opacity-0'
-            }`}
-          />
-        )}
-      </div>
+<div className="mb-12 sm:mb-16 lg:mb-20">
+  {loading ? (
+    <div className="flex items-baseline gap-3">
+      <Skeleton
+        height={50}
+        width={96}
+        baseColor="#A259FF"
+        highlightColor="#E2CCFF"
+        style={{ opacity: 0.2 }}
+      />
+      <Skeleton
+        height={50}
+        width={120}
+        baseColor="#A259FF"
+        highlightColor="#E2CCFF"
+        style={{ opacity: 0.2 }}
+      />
+    </div>
+  ) : (
+    <div className="flex items-baseline gap-3">
+      <img
+        src={barLogo}
+        alt="Critiq Logo"
+        className={`w-8 sm:w-12 lg:w-12 h-auto object-contain transition-opacity duration-700 ease-in-out filter brightness-0 invert ${
+          loaded ? 'opacity-100' : 'opacity-0'
+        }`}
+      />
+      <h1 className={`text-white text-2xl sm:text-3xl lg:text-5xl font-bold transition-opacity duration-700 ease-in-out ${
+        loaded ? 'opacity-100' : 'opacity-0'
+      }`}>
+        critiq
+      </h1>
+    </div>
+  )}
+</div>
 
       {/* Welcome Content */}
       <div className="text-center mb-8 sm:mb-16">

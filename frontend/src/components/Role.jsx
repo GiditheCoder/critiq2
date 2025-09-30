@@ -3,22 +3,22 @@ import critiqLogo from '../images/critiq-logo.png';
 import { useNavigate } from 'react-router-dom';
 import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
+import barLogo from '../images/bar-graph.png';
 
 const Role = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [loaded, setLoaded] = useState(false);
-  const [isLoading, setIsLoading] = useState(false); // For fullscreen loader
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const timer = setTimeout(() => {
       setLoading(false);
-      setLoaded(true); // trigger transition
+      setLoaded(true);
     }, 1000);
     return () => clearTimeout(timer);
   }, []);
 
-  // Handler for "listener" button
   const handleListenerSelect = () => {
     setIsLoading(true);
     setTimeout(() => {
@@ -26,99 +26,90 @@ const Role = () => {
     }, 1000);
   };
 
-  // Handler for "artist" button (if you want to navigate somewhere)
   const handleArtistSelect = () => {
     setIsLoading(true);
     setTimeout(() => {
-      // Replace with your desired route for artist
-      navigate('/artiste-signup'); 
+      navigate('/artiste-signup');
     }, 1000);
   };
 
   return (
-    <div className="relative flex flex-col h-screen bg-[#0B0A1F] text-white px-4">
-      {/* Logo in top-left */}
-      <div className="absolute top-6 left-6">
-        {loading ? (
-          <div className="w-24 sm:w-36">
-            <Skeleton
-              height={150}
-              width={150}
-              baseColor="#A259FF"
-              highlightColor="#E2CCFF"
-              style={{ opacity: 0.2 }}
-            />
-          </div>
-        ) : (
-          <img
-            src={critiqLogo}
-            alt="Critiq Logo"
-            className="w-24 sm:w-36 h-auto object-contain transition-opacity duration-700 ease-in-out"
-          />
-        )}
-      </div>
-
-      {/* Centered Content */}
-      <div className="flex flex-1 justify-center items-center">
-        <div className="text-center flex flex-col items-center max-w-md w-full">
+    <div className="relative flex flex-col min-h-screen bg-[#0B0A1F] text-white px-4 sm:px-6 lg:px-8">
+      {/* Main Content - Centered */}
+      <div className="flex flex-1 justify-center items-center py-8">
+        <div className="text-center flex flex-col items-center w-full max-w-sm sm:max-w-md lg:max-w-lg">
           {loading ? (
-            <>
+            <div className="w-full space-y-6">
               <Skeleton
-                height={30}
-                width={450}
-                className="mb-10"
+                height={32}
+                className="mb-8 sm:mb-10"
                 style={{ opacity: 0.2 }}
                 baseColor="#A259FF"
                 highlightColor="#E2CCFF"
               />
               <Skeleton
-                height={25}
-                width={100}
-                className="mb-4"
+                height={20}
+                width={60}
+                className="mb-6"
                 baseColor="#A259FF"
                 style={{ opacity: 0.2 }}
                 highlightColor="#E2CCFF"
               />
-              <Skeleton
-                height={50}
-                width={400}
-                className="mb-4"
-                style={{ opacity: 0.2, borderRadius: 999 }}
-                baseColor="#A259FF"
-                highlightColor="#E2CCFF"
-              />
-              <Skeleton
-                height={50}
-                width={400}
-                style={{ opacity: 0.2, borderRadius: 999 }}
-                baseColor="#A259FF"
-                highlightColor="#E2CCFF"
-              />
-            </>
+              <div className="space-y-3 sm:space-y-4">
+                <Skeleton
+                  height={40} // smaller default
+                  className="sm:!h-12 lg:!h-14"
+                  style={{ opacity: 0.2, borderRadius: 999 }}
+                  baseColor="#A259FF"
+                  highlightColor="#E2CCFF"
+                />
+                <Skeleton
+                  height={40} // smaller default
+                  className="sm:!h-12 lg:!h-14"
+                  style={{ opacity: 0.2, borderRadius: 999 }}
+                  baseColor="#A259FF"
+                  highlightColor="#E2CCFF"
+                />
+              </div>
+            </div>
           ) : (
             <div
-              className={`transition-opacity duration-700 ease-in-out ${
+              className={`transition-opacity duration-700 ease-in-out w-full ${
                 loaded ? 'opacity-100' : 'opacity-0'
               }`}
             >
-              <h2 className="text-2xl sm:text-3xl lg:text-3xl font-bold mb-10 text-white">
+              <h2 className="text-lg font-bold mb-6 text-white sm:text-2xl sm:mb-10 lg:text-3xl lg:mb-12">
                 Choose which applies to you
               </h2>
-              <p className="text-lg sm:text-xl font-semibold mb-6">I am</p>
-              <div className="flex flex-col space-y-4 w-full">
+              <p className="text-sm font-semibold mb-4 sm:text-lg sm:mb-8 lg:text-xl">
+                I am
+              </p>
+              <div className="flex flex-col space-y-3 w-full sm:space-y-4">
                 <button
                   onClick={handleArtistSelect}
                   disabled={isLoading}
-                  className="border border-purple-500 text-white text-base sm:text-lg px-6 py-3 sm:px-10 sm:py-4 rounded-full w-full transition-colors duration-300 ease-in-out disabled:opacity-60"
+                  className="border border-purple-500 text-white 
+                             text-xs px-4 py-2   /* smaller default */
+                             rounded-full w-full transition-colors duration-300 ease-in-out 
+                             disabled:opacity-60 hover:bg-purple-500/10 
+                             sm:text-sm sm:px-6 sm:py-3   
+                             lg:text-base lg:px-8 lg:py-4"
                 >
                   an artist
                 </button>
                 <button
                   onClick={handleListenerSelect}
                   disabled={isLoading}
-                  className="bg-purple-500 text-white text-base sm:text-lg font-bold px-6 py-3 sm:px-10 sm:py-4 rounded-full w-full hover:bg-[#E2CCFF] hover:text-[#A259FF] transition-colors duration-300 ease-in-out disabled:opacity-60"
+                  className="bg-purple-500 text-white font-bold 
+                             text-xs px-4 py-2   /* smaller default */
+                             rounded-full w-full 
+                             hover:bg-[#E2CCFF] hover:text-[#A259FF] 
+                             transition-colors duration-300 ease-in-out 
+                             disabled:opacity-60 
+                             sm:text-sm sm:px-6 sm:py-3   
+                             lg:text-base lg:px-8 lg:py-4"
                 >
-                  a listener
+                  a critiq
                 </button>
               </div>
             </div>
@@ -130,7 +121,7 @@ const Role = () => {
       {isLoading && (
         <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50">
           <svg
-            className="animate-spin h-16 w-16 text-[#A259FF]"
+            className="animate-spin h-10 w-10 text-[#A259FF] sm:h-16 sm:w-16"
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
             viewBox="0 0 24 24"
@@ -151,12 +142,11 @@ const Role = () => {
           </svg>
         </div>
       )}
+
+
+      
     </div>
   );
 };
 
 export default Role;
-
-// useEffect(() => {
-//   console.log("Current path:", location.pathname);
-// }, [location]);

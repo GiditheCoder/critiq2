@@ -49,13 +49,13 @@ const SelectVibe = () => {
   };
 
   return (
-    <div className="bg-[#0B0A1F] min-h-screen text-white flex flex-col items-center px-6 py-6">
+    <div className="bg-[#0B0A1F] min-h-screen text-white flex flex-col items-center px-4 sm:px-6 py-6">
       {/* Logo */}
-      <div className="mb-4" style={{ width: '200px', height: '200px' }}>
+      <div className="mb-3 w-16 h-16 sm:w-24 sm:h-24 md:w-32 md:h-32 lg:w-40 lg:h-40">
         {loading ? (
           <Skeleton
-            height={150}
-            width={150}
+            height="100%"
+            width="100%"
             baseColor="#A259FF"
             highlightColor="#E2CCFF"
             style={{ opacity: 0.2 }}
@@ -64,7 +64,7 @@ const SelectVibe = () => {
           <img
             src={critiqLogo}
             alt="logo"
-            className={`w-full h-auto object-contain transition-opacity duration-700 ease-in-out ${
+            className={`w-full h-full object-contain transition-opacity duration-700 ease-in-out ${
               loaded ? 'opacity-100' : 'opacity-0'
             }`}
           />
@@ -72,7 +72,7 @@ const SelectVibe = () => {
       </div>
 
       {/* Header */}
-      <div className="text-center mb-6">
+      <div className="text-center mb-4 sm:mb-6">
         {loading ? (
           <>
             <Skeleton height={30} width={250} baseColor="#A259FF" highlightColor="#E2CCFF" style={{ opacity: 0.2 }} />
@@ -81,14 +81,14 @@ const SelectVibe = () => {
         ) : (
           <>
             <h1
-              className={`text-2xl sm:text-3xl font-bold mb-2 transition-opacity duration-700 ease-in-out ${
+              className={`text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold mb-1 sm:mb-2 transition-opacity duration-700 ease-in-out ${
                 loaded ? 'opacity-100' : 'opacity-0'
               }`}
             >
               What's your vibe?
             </h1>
             <p
-              className={`text-sm transition-opacity duration-700 ease-in-out ${
+              className={`text-xs sm:text-sm md:text-base transition-opacity duration-700 ease-in-out ${
                 loaded ? 'opacity-100' : 'opacity-0'
               }`}
             >
@@ -99,15 +99,15 @@ const SelectVibe = () => {
       </div>
 
       {/* Genre Grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 mb-10">
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 sm:gap-3 md:gap-4 mb-6 sm:mb-8 md:mb-10 w-full max-w-4xl">
         {loading
           ? Array(8)
               .fill(0)
               .map((_, index) => (
                 <Skeleton
                   key={index}
-                  height={200}
-                  width={200}
+                  height={120}
+                  width="100%"
                   baseColor="#A259FF"
                   highlightColor="#E2CCFF"
                   style={{ opacity: 0.2 }}
@@ -121,7 +121,7 @@ const SelectVibe = () => {
                   key={genre.id}
                   onClick={() => toggleGenreSelection(genre.id)}
                   className={`relative rounded-xl overflow-hidden cursor-pointer transition-colors duration-300 ${
-                    isSelected ? 'border-[#A259FF] bg-[#A259FF]' : 'border-transparent hover:bg-[#727b83]'
+                    isSelected ? 'border-2 border-[#A259FF] bg-[#A259FF]' : 'border-transparent hover:bg-[#727b83]'
                   } transition-opacity duration-700 ease-in-out ${
                     loaded ? 'opacity-100' : 'opacity-0'
                   }`}
@@ -129,7 +129,7 @@ const SelectVibe = () => {
                   <img
                     src={genre.image}
                     alt={genre.name}
-                    className={`w-full h-52 object-cover transition-opacity duration-300 ${
+                    className={`w-full h-24 sm:h-32 md:h-40 lg:h-48 object-cover transition-opacity duration-300 ${
                       isSelected ? 'opacity-50' : 'hover:opacity-80'
                     }`}
                   />
@@ -141,16 +141,16 @@ const SelectVibe = () => {
       {/* Continue Button */}
       {loading ? (
         <Skeleton
-          height={50}
-          width={180}
+          height={48}
+          width={150}
           baseColor="#A259FF"
           highlightColor="#E2CCFF"
           style={{ opacity: 0.2 }}
-          borderRadius={9999}
+          borderRadius={8}
         />
       ) : (
         <button
-          className={`px-6 py-3 rounded-lg text-white font-semibold transition-colors duration-300 ${
+          className={`px-4 py-2 sm:px-6 sm:py-3 rounded-lg text-white font-semibold text-xs sm:text-sm md:text-base transition-colors duration-300 ${
             selectedGenres.length >= 3
               ? 'bg-[#A259FF] hover:bg-[#E2CCFF] hover:text-[#A259FF]'
               : 'bg-gray-600 cursor-not-allowed'

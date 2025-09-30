@@ -7,28 +7,48 @@ import job from "./config/cron.js";
 import cors from "cors";
 import { Webhook } from "svix";
 import { Clerk } from "@clerk/clerk-sdk-node";
+import multer from "multer";
+import path from "path";
+
+
 
 
 
 const app = express();
+
 const PORT = ENV.PORT || 8001;
 export const clerkClient = new Clerk({
   secretKey: ENV.CLERK_SECRET_KEY, // use the new secret key env variable
 });
 const CLERK_WEBHOOK_SECRET = ENV.CLERK_WEBHOOK_SECRET;
 const router = express.Router();
+const upload = multer({ dest: "uploads/" });
 
 if (ENV.NODE_ENV === "production") job.start();
 
 app.use(cors());
+
+
+
 
 // ⚠️ IMPORTANT: Apply express.json() to all routes EXCEPT the webhook
 app.use((req, res, next) => {
   if (req.url === '/api/clerk-webhook') {
     return next(); // Skip JSON parsing for webhook
   }
+
+    // Skip for file uploads (multer handles it)
+  if (req.url === '/api/song_details' && req.method === 'POST') {
+    return next();
+  }
+
+
   express.json()(req, res, next); // Apply JSON parsing for other routes
 });
+
+
+
+
 
 // Add this before your API routes
 app.get("/", (req, res) => {
@@ -214,46 +234,75 @@ app.post("/api/artiste_details", async (req, res) => {
 });
 
 
-// --- add song details ----
-
-app.post("/api/song_details", async (req, res) => {
+// Song details upload endpoint
+app.post("/api/song_details", upload.single("image"), async (req, res) => {
   try {
+    console.log("=== SONG DETAILS ENDPOINT HIT ===");
+    console.log("Request body:", req.body);
+    console.log("Uploaded file:", req.file);
+
     const { title, name, genre, nationality } = req.body;
+    const file = req.file;
 
     if (!title || !name || !genre || !nationality) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Missing required fields" });
+      return res.status(400).json({
+        success: false,
+        message: "All fields (title, name, genre, nationality) are required",
+      });
     }
 
+    // Build full image URL if file exists
+    const imageUrl = file
+      ? `${req.protocol}://${req.get("host")}/uploads/${file.filename}`
+      : null;
+
+    // Save song details into DB
     const [insertedSong] = await db
       .insert(songDetailsTable)
       .values({
         title,
         name,
-        genre ,
+        genre,
         nationality,
+        imageUrl,
       })
       .returning();
 
-    res.status(201).json({ success: true, data: insertedSong });
+    console.log("✅ Song saved:", insertedSong);
+
+    res.status(201).json({
+      success: true,
+      message: "Song details uploaded successfully",
+      data: insertedSong,
+    });
   } catch (error) {
-    console.error("Error saving song details:", error);
-    res
-      .status(500)
-      .json({ success: false, message: "Could not save song details" });
+    console.error("❌ Error saving song details:", error);
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
   }
 });
 
 
 
-// ✅ Create a GET endpoint to fetch all song details
+
+
+
+
 app.get("/api/song_details", async (req, res) => {
   try {
     // Query all rows from the table
     const songs = await db.select().from(songDetailsTable);
 
-    res.status(200).json(songs);
+    // Map songs so imageUrl becomes a full public URL
+    const baseUrl = `${req.protocol}://${req.get("host")}`;
+    const formattedSongs = songs.map((song) => ({
+      ...song,
+      imageUrl: song.imageUrl ? `${baseUrl}/${song.imageUrl}` : null,
+    }));
+
+    res.status(200).json({ success: true, data: formattedSongs });
   } catch (error) {
     console.error("Error fetching song details:", error);
     res.status(500).json({
@@ -265,7 +314,7 @@ app.get("/api/song_details", async (req, res) => {
 
 
 
-// ---------- Clerk Webhook ----------
+
 app.post(
   "/api/clerk-webhook",
   express.raw({ type: "application/json" }), // raw body

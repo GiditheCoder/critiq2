@@ -15,6 +15,7 @@ CREATE TABLE "song_details" (
 	"name" text NOT NULL,
 	"genre" text NOT NULL,
 	"nationality" text NOT NULL,
+	"image_url" text NOT NULL,
 	"created_at" timestamp DEFAULT now()
 );
 --> statement-breakpoint

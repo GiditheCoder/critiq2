@@ -49,7 +49,7 @@ const FeaturedCards = () => {
   return (
     <div className=" text-white p-6">
       <div className="mb-6">
-        <h2 className="text-2xl  font-bold mb-2 bg-gradient-to-r from-pink-400 to-purple-400 bg-clip-text text-transparent">Featured Artists</h2>
+        <h2 className="text-2xl  font-bold mb-2 text-[white] ">Featured Artists</h2>
         <p className="text-gray-400    text-sm">Discover your next favorite artist</p>
       </div>
       

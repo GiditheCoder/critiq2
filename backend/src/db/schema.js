@@ -5,8 +5,9 @@ export const songDetailsTable = pgTable("song_details",
    id: serial("id").primaryKey(),
    title: text("title").notNull(),
    name: text("name").notNull(),
-  genre : text("genre").notNull(),
+   genre : text("genre").notNull(),
    nationality: text("nationality").notNull(),
+    imageUrl: text("image_url"),
    createdAt: timestamp("created_at").defaultNow(),
   })
 
