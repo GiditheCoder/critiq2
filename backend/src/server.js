@@ -170,9 +170,6 @@ app.get("/api/user_votes", async (req, res) => {
 
 
 
-
-
-
 // --- add user detials ---
 
 app.post("/api/user_details", async(req, res)=>{

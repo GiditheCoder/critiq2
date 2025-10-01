@@ -84,34 +84,34 @@ const Role = () => {
               <p className="text-sm font-semibold mb-4 sm:text-lg sm:mb-8 lg:text-xl">
                 I am
               </p>
-              <div className="flex flex-col space-y-3 w-full sm:space-y-4">
-                <button
-                  onClick={handleArtistSelect}
-                  disabled={isLoading}
-                  className="border border-purple-500 text-white 
-                             text-xs px-4 py-2   /* smaller default */
-                             rounded-full w-full transition-colors duration-300 ease-in-out 
-                             disabled:opacity-60 hover:bg-purple-500/10 
-                             sm:text-sm sm:px-6 sm:py-3   
-                             lg:text-base lg:px-8 lg:py-4"
-                >
-                  an artist
-                </button>
-                <button
-                  onClick={handleListenerSelect}
-                  disabled={isLoading}
-                  className="bg-purple-500 text-white font-bold 
-                             text-xs px-4 py-2   /* smaller default */
-                             rounded-full w-full 
-                             hover:bg-[#E2CCFF] hover:text-[#A259FF] 
-                             transition-colors duration-300 ease-in-out 
-                             disabled:opacity-60 
-                             sm:text-sm sm:px-6 sm:py-3   
-                             lg:text-base lg:px-8 lg:py-4"
-                >
-                  a critiq
-                </button>
-              </div>
+            <div className="flex flex-col space-y-3 w-full max-w-[200px] mx-auto sm:max-w-none sm:space-y-4">
+  <button
+    onClick={handleArtistSelect}
+    disabled={isLoading}
+    className="border border-purple-500 text-white 
+               text-xs px-3 py-2   
+               rounded-full w-full transition-colors duration-300 ease-in-out 
+               disabled:opacity-60 hover:bg-purple-500/10 
+               sm:text-sm sm:px-6 sm:py-3   
+               lg:text-base lg:px-8 lg:py-4"
+  >
+    an artist
+  </button>
+  <button
+    onClick={handleListenerSelect}
+    disabled={isLoading}
+    className="bg-purple-500 text-white font-bold 
+               text-xs px-3 py-2   
+               rounded-full w-full 
+               hover:bg-[#E2CCFF] hover:text-[#A259FF] 
+               transition-colors duration-300 ease-in-out 
+               disabled:opacity-60 
+               sm:text-sm sm:px-6 sm:py-3   
+               lg:text-base lg:px-8 lg:py-4"
+  >
+    a critiq
+  </button>
+</div>
             </div>
           )}
         </div>
