@@ -193,7 +193,8 @@ import LeaderBoardNew from './components/LeaderBoardNew'
 import Layout from './components/LayOut'
 import AutoLogout from './components/AutoLogout'
 import ArtisteProfile from './components/ArtisteProfile'
-import ProfileRouter from './components/ProfileRouter' // Import the new ProfileRouter
+import ProfileRouter from './components/ProfileRouter' 
+import Settings from './components/Settings'
 
 const App = () => {
   return (
@@ -243,6 +244,7 @@ const App = () => {
       <Route path="/set-new-password" element={<SetNewPassword />} />
       <Route path="/password-updated" element={<PasswordUpdated />} />
       <Route path="/login-success" element={<LoginSuccess />} />
+      <Route path="/settings-page" element={<Settings />} />
 
       {/* the nav-wrapped pages */}
       <Route

@@ -2,8 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { useUser } from "@clerk/clerk-react";
 import Select from "react-select";
 import { useNavigate } from "react-router-dom";
-import userIcon from "../images/user12.png";
-import critiqLogo from "../images/critiq-logo.png";
+import barLogo from '../images/bar-graph.png';
 
 const COUNTRIES = [
   "Nigeria", "United States", "United Kingdom", "Ghana", "South Africa",
@@ -198,10 +197,10 @@ const handleSubmit = async (e) => {
   return (
     <div className="min-h-screen bg-[#0D0C1D] text-white flex flex-col items-center py-10 px-6">
       {/* Top bar */}
-      <div className="flex items-center justify-between w-full mb-12">
-        <img src={critiqLogo} alt="Critiq Logo" className="w-20" />
-        <img src={userIcon} alt="User" className="w-12 h-12 rounded-full border-2 border-gray-700" />
-      </div>
+      <div className="flex items-center justify-center w-full mb-12">
+  <h1 className="text-white text-center">Upload</h1>
+</div>
+
 
       <form onSubmit={handleSubmit} className="w-full max-w-2xl flex flex-col gap-6">
         {/* Song Title */}

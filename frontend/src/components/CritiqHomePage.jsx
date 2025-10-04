@@ -946,6 +946,7 @@ const CritiqHomePage = () => {
   const [activeNav, setActiveNav] = useState("Browse");
   const navigate = useNavigate();
   const location = useLocation();
+    const [logoutLoading, setLogoutLoading] = useState(false); // NEW STATE
 
   const isActive = (path) => location.pathname === path;
 
@@ -962,9 +963,11 @@ const CritiqHomePage = () => {
 
   const handleLogout = async () => {
     try {
+       setLogoutLoading(true); 
       await signOut({ redirectUrl: '/' });
     } catch (err) {
       console.error('Sign out failed:', err);
+       setLogoutLoading(false);
     }
   };
 
@@ -1116,8 +1119,22 @@ const CritiqHomePage = () => {
             <h1 className={`text-white text-xl font-bold transition-opacity duration-700 ease-in-out sm:text-2xl lg:text-2xl ${loaded ? 'opacity-100' : 'opacity-0'}`}>critiq</h1>
           </div>
         )}
-        <button onClick={handleLogout} className="flex items-center justify-center w-10 h-10 rounded-full bg-[#1E1B30] hover:bg-[#2a2d47] transition-colors">
+        {/* <button onClick={handleLogout} 
+        disabled={logoutLoading}
+        className="flex items-center justify-center w-10 h-10 rounded-full bg-[#1E1B30] hover:bg-[#2a2d47] transition-colors">
           <LogOut className="w-5 h-5 text-[white]" />
+        </button> */}
+         {/* Logout button with loader */}
+        <button
+          onClick={handleLogout}
+          disabled={logoutLoading}
+          className="flex items-center justify-center w-10 h-10 rounded-full bg-[#1E1B30] hover:bg-[#2a2d47] transition-colors relative"
+        >
+          {logoutLoading ? (
+            <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+          ) : (
+            <LogOut className="w-5 h-5 text-white" />
+          )}
         </button>
       </div>
 
