@@ -9,11 +9,13 @@ import barLogo from '../images/bar-graph.png';
 import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
 
+
 const Signin = () => {
   const navigate = useNavigate();
-  const { isSignedIn } = useAuth();
+  const { isSignedIn } = useAuth();      // 🔑 tells if session exists
   const { signIn, setActive, isLoaded: signInLoaded } = useSignIn();
   const { signOut } = useClerk();
+  const { user } = useUser();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -22,7 +24,14 @@ const Signin = () => {
   const [loaded, setLoaded] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [signingIn, setSigningIn] = useState(false);
-  const { user } = useUser();
+
+  // ✅ Auto-redirect if already signed in
+  useEffect(() => {
+    if (isSignedIn) {
+      // you can also fetch their role here if needed
+      navigate('/homePage', { replace: true });
+    }
+  }, [isSignedIn, navigate]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -42,8 +51,6 @@ const Signin = () => {
   const handleForgotPasswordScreen = () => {
     navigate('/forgot-password');
   };
-
-  console.log("Signed in?", isSignedIn);
 
   const handleSignIn = async () => {
     if (!email || !password) {
@@ -120,7 +127,8 @@ const Signin = () => {
     }
   };
 
-  return (
+  // ... rest of your JSX (unchanged)
+    return (
     <div className="min-h-screen bg-[#0B0A1F] flex items-center justify-center px-4 py-8 font-sans">
       <div className="w-full max-w-[280px] sm:max-w-md">
         {/* Logo */}
@@ -311,4 +319,6 @@ const Signin = () => {
   );
 };
 
-export default Signin;
+export default Signin;  
+
+

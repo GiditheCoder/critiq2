@@ -23,6 +23,14 @@ const ArtisteSignIn = () => {
   const [signingIn, setSigningIn] = useState(false);
   const { user } = useUser();
 
+   // ✅ Auto-redirect if already signed in
+    useEffect(() => {
+      if (isSignedIn) {
+        // you can also fetch their role here if needed
+        navigate('/homePage', { replace: true });
+      }
+    }, [isSignedIn, navigate]);
+
   useEffect(() => {
     const timer = setTimeout(() => {
       setLoading(false);
