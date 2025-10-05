@@ -199,7 +199,7 @@ import Settings from './components/Settings'
 const App = () => {
   return (
      <>
-      <AutoLogout timeout={10 * 60 * 1000} /> {/* 5 mins */}
+      <AutoLogout timeout={20 * 60 * 1000} /> {/* 20 mins */}
     <Routes>
        <Route path="/signin" element={<Signin />} />
       <Route path="/signup" element={<Signup />} />
