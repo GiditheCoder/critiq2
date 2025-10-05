@@ -66,34 +66,75 @@ const CritiqHomePage = () => {
   ];
 
   // --- Fetch songs (FIXED)
+  // useEffect(() => {
+  //   const fetchSongs = async () => {
+  //     try {
+  //       const res = await fetch("https://critiq-backend-6v3f.onrender.com/api/song_details");
+  //       if (!res.ok) throw new Error("Failed to fetch songs");
+  //       const response = await res.json();
+        
+  //       // Backend returns { success: true, data: [...] }
+  //       // Extract the data array from the response
+  //       const songsData = response.data || response;
+  //        console.log("Fetched songs data:", songsData);
+  //       if (Array.isArray(songsData)) {
+  //         setSongs(songsData);
+  //       } else {
+  //         console.error("API returned non-array data:", response);
+  //         setSongs([]); // Fallback to empty array
+  //         setError("Unexpected data format from server");
+  //       }
+  //     } catch (err) {
+  //       console.error("Fetch error:", err);
+  //       setError(err.message);
+  //       setSongs([]); // Ensure songs remains an array even on error
+  //     } finally {
+  //       setLoadingSongs(false);
+  //     }
+  //   };
+  //   fetchSongs();
+  // }, []);
+
   useEffect(() => {
-    const fetchSongs = async () => {
-      try {
-        const res = await fetch("https://critiq-backend-6v3f.onrender.com/api/song_details");
-        if (!res.ok) throw new Error("Failed to fetch songs");
-        const response = await res.json();
-        
-        // Backend returns { success: true, data: [...] }
-        // Extract the data array from the response
-        const songsData = response.data || response;
-        
-        if (Array.isArray(songsData)) {
-          setSongs(songsData);
-        } else {
-          console.error("API returned non-array data:", response);
-          setSongs([]); // Fallback to empty array
-          setError("Unexpected data format from server");
-        }
-      } catch (err) {
-        console.error("Fetch error:", err);
-        setError(err.message);
-        setSongs([]); // Ensure songs remains an array even on error
-      } finally {
-        setLoadingSongs(false);
+  const fetchSongs = async () => {
+    try {
+      const res = await fetch("https://critiq-backend-6v3f.onrender.com/api/song_details");
+      if (!res.ok) throw new Error("Failed to fetch songs");
+
+      const response = await res.json();
+
+      // Backend returns { success: true, data: [...] }
+      const songsData = response.data || response;
+
+      console.log("🎵 Full backend response:", response);
+      console.log("🎶 Extracted songs data:", songsData);
+
+      // ✅ Log each song's URL individually
+      if (Array.isArray(songsData)) {
+        songsData.forEach((song, index) => {
+          console.log(`Song ${index + 1}:`, {
+            title: song.title,
+            imageUrl: song.imageUrl,
+          });
+        });
+        setSongs(songsData);
+      } else {
+        console.error("API returned non-array data:", response);
+        setSongs([]);
+        setError("Unexpected data format from server");
       }
-    };
-    fetchSongs();
-  }, []);
+    } catch (err) {
+      console.error("🚨 Fetch error:", err);
+      setError(err.message);
+      setSongs([]);
+    } finally {
+      setLoadingSongs(false);
+    }
+  };
+
+  fetchSongs();
+}, []);
+
 
   // --- Fetch votes
   useEffect(() => {

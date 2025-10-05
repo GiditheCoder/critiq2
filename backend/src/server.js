@@ -27,7 +27,7 @@ const upload = multer({ dest: "uploads/" });
 if (ENV.NODE_ENV === "production") job.start();
 
 app.use(cors());
-
+app.use("/uploads", express.static("uploads"));
 
 
 
@@ -282,32 +282,10 @@ app.post("/api/song_details", upload.single("image"), async (req, res) => {
 });
 
 
-
-// app.get("/api/song_details", async (req, res) => {
-//   try {
-//     // Query all rows from the table
-//     const songs = await db.select().from(songDetailsTable);
-
-//     // Map songs so imageUrl becomes a full public URL
-//     const baseUrl = `${req.protocol}://${req.get("host")}`;
-//     const formattedSongs = songs.map((song) => ({
-//       ...song,
-//       imageUrl: song.imageUrl ? `${baseUrl}/${song.imageUrl}` : null,
-//     }));
-
-//     res.status(200).json({ success: true, data: formattedSongs });
-//   } catch (error) {
-//     console.error("Error fetching song details:", error);
-//     res.status(500).json({
-//       success: false,
-//       message: "Could not fetch song details",
-//     });
-//   }
-// });
-
 app.get("/api/song_details", async (req, res) => {
   try {
     const songs = await db.select().from(songDetailsTable);
+  console.log("Sending song details to frontend:", songs);
 
     // Keep imageUrl as-is (already full URL)
     res.status(200).json({ success: true, data: songs });
