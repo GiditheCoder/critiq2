@@ -8,9 +8,6 @@ import cors from "cors";
 import { Webhook } from "svix";
 import { Clerk } from "@clerk/clerk-sdk-node";
 import multer from "multer";
-import path from "path";
-
-
 
 
 

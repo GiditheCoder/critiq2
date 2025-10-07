@@ -127,7 +127,6 @@ const Signin = () => {
     }
   };
 
-  // ... rest of your JSX (unchanged)
     return (
     <div className="min-h-screen bg-[#0B0A1F] flex items-center justify-center px-4 py-8 font-sans">
       <div className="w-full max-w-[280px] sm:max-w-md">
