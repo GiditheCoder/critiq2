@@ -341,7 +341,7 @@ const CritiqHomePage = () => {
                       )}
                       <div className="text-left">
                         <h3 className="font-semibold text-white">{song.title}</h3>
-                        <p className="text-sm text-gray-400">{song.name}</p>
+                        <p className="text-sm text-white">{song.name}</p>
                       </div>
                     </div>
 
