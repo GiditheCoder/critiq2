@@ -8,6 +8,10 @@ import cors from "cors";
 import { Webhook } from "svix";
 import { Clerk } from "@clerk/clerk-sdk-node";
 import multer from "multer";
+import { createRouteHandler } from "uploadthing/express";
+import { uploadRouter } from "./config/uploadthing.js";
+
+
 
 
 
@@ -21,11 +25,16 @@ const CLERK_WEBHOOK_SECRET = ENV.CLERK_WEBHOOK_SECRET;
 const router = express.Router();
 const upload = multer({ dest: "uploads/" });
 
+
+
+
+
 if (ENV.NODE_ENV === "production") job.start();
 
 app.use(cors());
-app.use("/uploads", express.static("uploads"));
+// app.use("/uploads", express.static("uploads"));
 
+app.use("/api/uploadthing", createRouteHandler({ router: uploadRouter }));
 
 
 // ⚠️ IMPORTANT: Apply express.json() to all routes EXCEPT the webhook
@@ -229,14 +238,59 @@ app.post("/api/artiste_details", async (req, res) => {
 
 
 // Song details upload endpoint
-app.post("/api/song_details", upload.single("image"), async (req, res) => {
-  try {
-    console.log("=== SONG DETAILS ENDPOINT HIT ===");
-    console.log("Request body:", req.body);
-    console.log("Uploaded file:", req.file);
+// app.post("/api/song_details", upload.single("image"), async (req, res) => {
+//   try {
+//     console.log("=== SONG DETAILS ENDPOINT HIT ===");
+//     console.log("Request body:", req.body);
+//     console.log("Uploaded file:", req.file);
 
-    const { title, name, genre, nationality } = req.body;
-    const file = req.file;
+//     const { title, name, genre, nationality } = req.body;
+//     const file = req.file;
+
+//     if (!title || !name || !genre || !nationality) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "All fields (title, name, genre, nationality) are required",
+//       });
+//     }
+
+//     // Build full image URL if file exists
+//     const imageUrl = file
+//       ? `${req.protocol}://${req.get("host")}/uploads/${file.filename}`
+//       : null;
+
+//     // Save song details into DB
+//     const [insertedSong] = await db
+//       .insert(songDetailsTable)
+//       .values({
+//         title,
+//         name,
+//         genre,
+//         nationality,
+//         imageUrl,
+//       })
+//       .returning();
+
+//     console.log("✅ Song saved:", insertedSong);
+
+//     res.status(201).json({
+//       success: true,
+//       message: "Song details uploaded successfully",
+//       data: insertedSong,
+//     });
+//   } catch (error) {
+//     console.error("❌ Error saving song details:", error);
+//     res.status(500).json({
+//       success: false,
+//       message: error.message,
+//     });
+//   }
+// });
+
+// Accept JSON { title, name, genre, nationality, imageUrl }
+app.post("/api/song_details", async (req, res) => {
+  try {
+    const { title, name, genre, nationality, imageUrl } = req.body;
 
     if (!title || !name || !genre || !nationality) {
       return res.status(400).json({
@@ -245,12 +299,6 @@ app.post("/api/song_details", upload.single("image"), async (req, res) => {
       });
     }
 
-    // Build full image URL if file exists
-    const imageUrl = file
-      ? `${req.protocol}://${req.get("host")}/uploads/${file.filename}`
-      : null;
-
-    // Save song details into DB
     const [insertedSong] = await db
       .insert(songDetailsTable)
       .values({
@@ -258,7 +306,7 @@ app.post("/api/song_details", upload.single("image"), async (req, res) => {
         name,
         genre,
         nationality,
-        imageUrl,
+        imageUrl: imageUrl ?? null,
       })
       .returning();
 
@@ -277,6 +325,7 @@ app.post("/api/song_details", upload.single("image"), async (req, res) => {
     });
   }
 });
+
 
 
 app.get("/api/song_details", async (req, res) => {
