@@ -44,9 +44,9 @@ app.use((req, res, next) => {
   }
 
     // Skip for file uploads (multer handles it)
-  if (req.url === '/api/song_details' && req.method === 'POST') {
-    return next();
-  }
+  // if (req.url === '/api/song_details' && req.method === 'POST') {
+  //   return next();
+  // }
 
 
   express.json()(req, res, next); // Apply JSON parsing for other routes
