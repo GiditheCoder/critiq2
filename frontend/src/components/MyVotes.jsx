@@ -1,8 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { Vote } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const MyVotes = () => {
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+
+  const handleTHomeRedirect = () => { 
+    navigate("/homePage");
+  }
 
   useEffect(() => {
     // Simulate loading delay
@@ -17,9 +23,9 @@ const MyVotes = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-[#0B0A1F] to-[#1A1535] flex flex-col items-center justify-center">
-        <div className="relative">
+         <div className="relative w-24 h-24">
           <div className="w-24 h-24 border-4 border-purple-500/30 border-t-purple-500 rounded-full animate-spin"></div>
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+          <div className="absolute inset-0 flex items-center justify-center">
             <Vote className="w-10 h-10 text-purple-500" />
           </div>
         </div>
@@ -75,7 +81,7 @@ const MyVotes = () => {
 
         {/* Browse Songs Button */}
         <button className="group relative px-8 py-4 bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white font-semibold rounded-full transition-all duration-300 transform hover:scale-105 hover:shadow-lg hover:shadow-purple-500/50 animate-[fadeIn_0.8s_ease-out_0.4s_both]">
-          <span className="relative z-10">Browse Songs</span>
+          <span className="relative z-10" onClick={handleTHomeRedirect}>Browse Songs</span>
           <div className="absolute inset-0 rounded-full bg-gradient-to-r from-purple-400 to-pink-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-sm"></div>
         </button>
 

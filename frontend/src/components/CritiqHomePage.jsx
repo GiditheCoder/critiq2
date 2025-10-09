@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import {
   Search,
   TrendingUp,
+  TrendingDown,
   Calendar,
   Music,
   Home,
@@ -10,6 +11,7 @@ import {
   User,
   LogOut,
   ArrowUp,
+  ArrowDown
 } from "lucide-react";
 import barLogo from "../images/bar-graph.png";
 import Skeleton from "react-loading-skeleton";
@@ -269,10 +271,7 @@ const CritiqHomePage = () => {
       })
     : [];
 
-  // console.log("🎧 Active Tab:", activeTab);
-  // console.log("🎧 Active Genre:", selectedGenre);
-  // console.log("🎧 Tab Songs:", tabDisplayedSongs.length);
-  // console.log("🎧 Genre Songs:", genreFilteredSongs.length);
+
 
   return (
     <div className="min-h-screen bg-[#0B0A1F] text-white flex flex-col">
@@ -299,13 +298,15 @@ const CritiqHomePage = () => {
           </div>
         ) : (
           <div className="flex items-baseline gap-2 sm:gap-3">
+          
             <img
-              src={barLogo}
-              alt="Critiq Logo"
-              className={`w-5 h-auto object-contain transition-opacity duration-700 ease-in-out filter brightness-0 invert sm:w-5 lg:w-6 ${
-                loaded ? "opacity-100" : "opacity-0"
-              }`}
-            />
+  src={barLogo}
+  alt="Critiq Logo"
+  style={{ filter: 'brightness(0) saturate(100%) invert(100%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(100%) contrast(100%)' }}
+  className={`w-5 h-auto object-contain transition-opacity duration-700 ease-in-out ${
+    loaded ? 'opacity-100' : 'opacity-0'
+  }`}
+/>
             <h1
               className={`text-white text-xl font-bold transition-opacity duration-700 ease-in-out sm:text-2xl lg:text-2xl ${
                 loaded ? "opacity-100" : "opacity-0"
@@ -426,7 +427,7 @@ const CritiqHomePage = () => {
                       size={28}
                       className={`cursor-pointer transition-transform duration-200 hover:scale-110 ${
                         voted
-                          ? "fill-red-500 text-red-500"
+                          ? "fill-green-500 text-green-500"
                           : "text-gray-400"
                       }`}
                       onClick={() => handleVoteToggle(song.id)}
@@ -447,6 +448,8 @@ const CritiqHomePage = () => {
             })}
           </ul>
         )}
+
+               <h1 className="text-center mt-2 opacity-75 p-5">See more</h1>
       </div>
 
       <FeaturedCards /> 

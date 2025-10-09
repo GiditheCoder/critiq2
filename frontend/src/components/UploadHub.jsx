@@ -90,7 +90,7 @@ const UploadHub = () => {
       if (!res.ok) throw new Error(data.message || "Upload failed");
 
       console.log("✅ Song saved:", data.data);
-      navigate("/successful-upload");
+      navigate("/successful-upload" , {state:{ songTitle: formData.title }}); // Pass the song title to the success page
     } catch (err) {
       console.error(err);
       setError(err.message);
@@ -178,7 +178,7 @@ const UploadHub = () => {
             }}
           />
 
-          {uploadedImageUrl && (
+      {uploadedImageUrl && (
             <div className="mt-4 w-32 h-32">
               <img
                 src={uploadedImageUrl}

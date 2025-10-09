@@ -1,7 +1,26 @@
 import React from 'react';
-import Arena from '../images/arena.jpg'; // fixed extension typo (.jpg not .jng)
+import Arena from '../images/arena.jpg';
+import { useNavigate ,  useLocation} from 'react-router-dom';
+
+// get the song namefrom upload song 
+// implement the share 
+// view track 
 
 const SuccessfulUploadHub = () => {
+  const location = useLocation();
+  const songTitle = location.state?.songTitle || "Your Track";
+  console.log("Song Title:", songTitle); // Debugging line to check the song title
+   const navigate = useNavigate();
+
+   const handleProfileNavigation = () => { 
+    navigate('/profile-page');
+   }
+
+    const handleUploadNavigation = () => { 
+      navigate('/uploadhub');
+   }
+
+
   return (
     <div className="min-h-screen bg-[#0f0f1a] flex flex-col items-center justify-center text-center px-4">
       {/* Top Image */}
@@ -16,7 +35,7 @@ const SuccessfulUploadHub = () => {
 
       {/* Subtext */}
       <p className="text-gray-300 mb-6">
-        Your track <span className="font-semibold text-white">"Neon Dreams"</span> is now live on Critiq!
+        Your track <span className="font-semibold text-white">{songTitle}</span> is now live on Critiq!
       </p>
 
       {/* Primary Button */}
@@ -31,8 +50,8 @@ const SuccessfulUploadHub = () => {
 
       {/* Links */}
       <div className="flex flex-col gap-2 text-sm">
-        <a href="#" className="text-gray-300 hover:text-white underline">Upload Another Song</a>
-        <a href="#" className="text-gray-300 hover:text-white underline">Go to My Profile</a>
+        <a href="#" className="text-gray-300 hover:text-white underline" onClick={handleUploadNavigation}>Upload Another Song</a>
+        <a href="#" className="text-gray-300 hover:text-white underline" onClick={handleProfileNavigation}>Go to My Profile</a>
       </div>
     </div>
   );

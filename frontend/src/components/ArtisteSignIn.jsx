@@ -179,13 +179,14 @@ const ArtisteSignIn = () => {
               </div>
             ) : (
               <div className="flex items-baseline gap-2 sm:gap-3">
-                <img
+                 <img
                   src={barLogo}
                   alt="Critiq Logo"
-                  className={`w-6 h-auto object-contain transition-opacity duration-700 ease-in-out filter brightness-0 invert sm:w-5 lg:w-10 ${
+                  style={{ filter: 'brightness(0) saturate(100%) invert(100%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(100%) contrast(100%)' }}
+                  className={`w-8 sm:w-12 lg:w-12 h-auto object-contain transition-opacity duration-700 ease-in-out ${
                     loaded ? 'opacity-100' : 'opacity-0'
                   }`}
-                />
+                            />
                 <h1 className={`text-white text-lg font-bold transition-opacity duration-700 ease-in-out sm:text-2xl lg:text-4xl ${
                   loaded ? 'opacity-100' : 'opacity-0'
                 }`}>
