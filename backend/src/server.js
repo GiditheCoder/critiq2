@@ -1,96 +1,324 @@
+// import express from "express";
+// import { ENV } from "./config/env.js";
+// import { db } from "./config/db.js";
+// import { votesTable, userVotesTable , userDetailsTable , artisteDetailsTable , songDetailsTable } from "./db/schema.js";
+// import { eq, and,  sql } from "drizzle-orm";
+// import job from "./config/cron.js";
+// import cors from "cors";
+// import { Webhook } from "svix";
+// import { Clerk } from "@clerk/clerk-sdk-node";
+// import { createRouteHandler } from "uploadthing/express";
+// import { uploadRouter } from "./config/uploadthing.js";
+// import http from "http";
+// import { Server } from "socket.io";
+
+
+
+
+
+// const app = express();
+// // Create a raw HTTP server and attach Express
+// const server = http.createServer(app);
+
+// const PORT = ENV.PORT || 8001;
+// export const clerkClient = new Clerk({
+//   secretKey: ENV.CLERK_SECRET_KEY, // use the new secret key env variable
+// });
+// const CLERK_WEBHOOK_SECRET = ENV.CLERK_WEBHOOK_SECRET;
+// const router = express.Router();
+// // const upload = multer({ dest: "uploads/" });
+
+
+
+// // Initialize Socket.IO and allow CORS
+// const io = new Server(server, {
+//   cors: {
+//     origin: "*", // You can restrict this to your frontend URL
+//     methods: ["GET", "POST"],
+//   },
+// });
+
+// // Listen for new socket connections
+// io.on("connection", (socket) => {
+//   console.log("🟢 A user connected:", socket.id);
+
+//   socket.on("disconnect", () => {
+//     console.log("🔴 User disconnected:", socket.id);
+//   });
+// });
+
+// // Now start your combined server
+// server.listen(PORT, () => {
+//   console.log("✅ Server (with Socket.IO) running on PORT:", PORT);
+// });
+
+
+// if (ENV.NODE_ENV === "production") job.start();
+
+// app.use(cors());
+
+
+// app.use("/api/uploadthing", createRouteHandler({ router: uploadRouter }));
+
+
+// // ⚠️ IMPORTANT: Apply express.json() to all routes EXCEPT the webhook
+// app.use((req, res, next) => {
+//   if (req.url === '/api/clerk-webhook') {
+//     return next(); // Skip JSON parsing for webhook
+//   }
+
+//     // Skip for file uploads (multer handles it)
+//   // if (req.url === '/api/song_details' && req.method === 'POST') {
+//   //   return next();
+//   // }
+
+
+//   express.json()(req, res, next); // Apply JSON parsing for other routes
+// });
+
+
+
+
+
+// // Add this before your API routes
+// app.get("/", (req, res) => {
+//   res.json({ 
+//     message: "Backend API is running", 
+//     status: "healthy",
+//     endpoints: ["/api/health", "/api/votes", "/api/user_votes", "/api/artiste_details", "/api/user_details", "/api/song_details", "/api/check-role"]
+//   });
+// });
+
+
+// // ---------- Health Check ----------
+// app.get("/api/health", (req, res) => {
+//   res.status(200).json({ success: true });
+// });
+
+// ---------- Get total votes ----------
+// app.get("/api/votes", async (_req, res) => {
+//   try {
+//     const allVotes = await db.select().from(votesTable);
+//     res.status(200).json(allVotes);
+//   } catch (error) {
+//     console.error("Error fetching votes:", error);
+//     res.status(500).json({ error: "Something went wrong" });
+//   }
+// });
+
+
+// ---------- Add a vote (user + total) ----------
+// app.post("/api/user_votes", async (req, res) => {
+//   try {
+//     const { userId, songId } = req.body;
+
+//     // 1) Insert into user_votes
+//     await db.insert(userVotesTable)
+//       .values({ userId, songId })
+//       .onConflictDoNothing({
+//         target: [userVotesTable.userId, userVotesTable.songId],
+//       });
+
+//     // 2) Increment vote count (or create row)
+//     await db.insert(votesTable)
+//       .values({ songId, voteCount: 1 })
+//       .onConflictDoUpdate({
+//         target: votesTable.songId,
+//         set: { voteCount: sql`${votesTable.voteCount} + 1` },
+//       });
+
+//           // 3) Fetch the updated count
+//     const [updated] = await db.select().from(votesTable).where(eq(votesTable.songId, songId));
+
+//     // ✅ Emit real-time update to all clients
+//     io.emit("voteUpdated", { [songId]: updated.voteCount });
+
+//     res.status(201).json({ success: true });
+//   } catch (error) {
+//     console.error("Error adding vote:", error);
+//     res.status(500).json({ error: "Something went wrong" });
+//   }
+// });
+
+
+
+// ---------- Remove a user’s vote ----------
+// app.delete("/api/user_votes", async (req, res) => {
+//   try {
+//     const { userId, songId } = req.body;
+//     if (!userId || !songId) {
+//       return res.status(400).json({ error: "Missing or invalid userId/songId" });
+//     }
+
+//     // 1️⃣ Delete from user_votes
+//     const deleted = await db
+//       .delete(userVotesTable)
+//       .where(and(eq(userVotesTable.userId, userId), eq(userVotesTable.songId, songId)))
+//       .returning();
+
+//     if (deleted.length === 0) {
+//       return res.status(404).json({ error: "Vote not found for this user" });
+//     }
+
+//     // 2️⃣ Fetch current total votes
+//     const [current] = await db
+//       .select()
+//       .from(votesTable)
+//       .where(eq(votesTable.songId, songId));
+
+//     if (current) {
+//       if (current.voteCount > 1) {
+//         // Decrement the count
+//         await db
+//           .update(votesTable)
+//           .set({ voteCount: sql`${votesTable.voteCount} - 1` })
+//           .where(eq(votesTable.songId, songId));
+//       } else {
+//         // Remove the votes row if this was the last vote
+//         await db.delete(votesTable).where(eq(votesTable.songId, songId));
+//       }
+//     }
+  
+//     // After decrement or delete
+// const [updated] = await db.select().from(votesTable).where(eq(votesTable.songId, songId));
+// const newCount = updated ? updated.voteCount : 0;
+// io.emit("voteUpdated", { [songId]: newCount });
+
+//     res.json({ success: true });
+//   } catch (error) {
+//     console.error("Error removing vote:", error);
+//     res.status(500).json({ error: "Something went wrong" });
+//   }
+// });
+
+// // ---------- Start Server ----------
+// app.listen(PORT, () => {
+//   console.log("Server is running123 on PORT:", PORT);
+// });
+
+
+
 import express from "express";
 import { ENV } from "./config/env.js";
 import { db } from "./config/db.js";
-import { votesTable, userVotesTable , userDetailsTable , artisteDetailsTable , songDetailsTable } from "./db/schema.js";
-import { eq, and,  sql } from "drizzle-orm";
+import {
+  votesTable,
+  userVotesTable,
+  userDetailsTable,
+  artisteDetailsTable,
+  songDetailsTable,
+} from "./db/schema.js";
+import { eq, and, sql } from "drizzle-orm";
 import job from "./config/cron.js";
 import cors from "cors";
 import { Webhook } from "svix";
 import { Clerk } from "@clerk/clerk-sdk-node";
-import multer from "multer";
 import { createRouteHandler } from "uploadthing/express";
 import { uploadRouter } from "./config/uploadthing.js";
-
-
-
-
+import http from "http";
+import { Server } from "socket.io";
 
 const app = express();
 
+// ✅ Create HTTP server and attach Express
+const server = http.createServer(app);
+
+// ✅ Initialize Socket.IO and allow CORS
+const io = new Server(server, {
+  cors: {
+    origin:["https://critiq-frontend.onrender.com",
+    "http://localhost:5173",] ,// Change this to your frontend URL in production
+    methods: ["GET", "POST", "DELETE"],
+  },
+});
+
 const PORT = ENV.PORT || 8001;
+
+// ✅ Clerk setup
 export const clerkClient = new Clerk({
-  secretKey: ENV.CLERK_SECRET_KEY, // use the new secret key env variable
+  secretKey: ENV.CLERK_SECRET_KEY,
 });
 const CLERK_WEBHOOK_SECRET = ENV.CLERK_WEBHOOK_SECRET;
-const router = express.Router();
-const upload = multer({ dest: "uploads/" });
 
+// ✅ Socket.IO connection listener
+io.on("connection", (socket) => {
+  console.log("🟢 User connected:", socket.id);
 
-
-
-
-if (ENV.NODE_ENV === "production") job.start();
-
-app.use(cors());
-// app.use("/uploads", express.static("uploads"));
-
-app.use("/api/uploadthing", createRouteHandler({ router: uploadRouter }));
-
-
-// ⚠️ IMPORTANT: Apply express.json() to all routes EXCEPT the webhook
-app.use((req, res, next) => {
-  if (req.url === '/api/clerk-webhook') {
-    return next(); // Skip JSON parsing for webhook
-  }
-
-    // Skip for file uploads (multer handles it)
-  // if (req.url === '/api/song_details' && req.method === 'POST') {
-  //   return next();
-  // }
-
-
-  express.json()(req, res, next); // Apply JSON parsing for other routes
-});
-
-
-
-
-
-// Add this before your API routes
-app.get("/", (req, res) => {
-  res.json({ 
-    message: "Backend API is running", 
-    status: "healthy",
-    endpoints: ["/api/health", "/api/votes", "/api/user_votes", "/api/artiste_details", "/api/user_details", "/api/song_details", "/api/check-role"]
+  socket.on("disconnect", () => {
+    console.log("🔴 User disconnected:", socket.id);
   });
 });
 
-
-// ---------- Health Check ----------
-app.get("/api/health", (req, res) => {
-  res.status(200).json({ success: true });
+// ✅ Start the combined HTTP + Socket.IO server
+server.listen(PORT, () => {
+  console.log(`✅ Server (Express + Socket.IO) running on port ${PORT}`);
 });
 
+// ⚙️ Background job
+if (ENV.NODE_ENV === "production") job.start();
 
-// ---------- Add a vote (user + total) ----------
+// ✅ Middlewares
+app.use(cors());
+app.use("/api/uploadthing", createRouteHandler({ router: uploadRouter }));
+
+// ⚠️ Apply JSON parser except for Clerk webhook
+app.use((req, res, next) => {
+  if (req.url === "/api/clerk-webhook") return next();
+  express.json()(req, res, next);
+});
+
+// --- Routes ---
+
+app.get("/", (req, res) => {
+  res.json({
+    message: "Backend API is running",
+    status: "healthy",
+    endpoints: [
+      "/api/health",
+      "/api/votes",
+      "/api/user_votes",
+      "/api/artiste_details",
+      "/api/user_details",
+      "/api/song_details",
+      "/api/check-role",
+    ],
+  });
+});
+
+app.get("/api/health", (req, res) => res.status(200).json({ success: true }));
+
+
+
+// ✅ Add a vote
 app.post("/api/user_votes", async (req, res) => {
   try {
     const { userId, songId } = req.body;
 
-    // 1) Insert into user_votes
-    await db.insert(userVotesTable)
+    // 1) Record user vote
+    await db
+      .insert(userVotesTable)
       .values({ userId, songId })
       .onConflictDoNothing({
         target: [userVotesTable.userId, userVotesTable.songId],
       });
 
-    // 2) Increment vote count (or create row)
-    await db.insert(votesTable)
+    // 2) Increment global vote count
+    await db
+      .insert(votesTable)
       .values({ songId, voteCount: 1 })
       .onConflictDoUpdate({
         target: votesTable.songId,
         set: { voteCount: sql`${votesTable.voteCount} + 1` },
       });
+
+    // 3) Fetch updated count
+    const [updated] = await db
+      .select()
+      .from(votesTable)
+      .where(eq(votesTable.songId, songId));
+
+    // ✅ Emit real-time vote update
+    io.emit("voteUpdated", { [songId]: updated.voteCount });
 
     res.status(201).json({ success: true });
   } catch (error) {
@@ -100,42 +328,39 @@ app.post("/api/user_votes", async (req, res) => {
 });
 
 
-// ---------- Remove a user’s vote ----------
 app.delete("/api/user_votes", async (req, res) => {
   try {
     const { userId, songId } = req.body;
-    if (!userId || !songId) {
+    if (!userId || !songId)
       return res.status(400).json({ error: "Missing or invalid userId/songId" });
-    }
 
-    // 1️⃣ Delete from user_votes
+    // 1) Remove user vote
     const deleted = await db
       .delete(userVotesTable)
       .where(and(eq(userVotesTable.userId, userId), eq(userVotesTable.songId, songId)))
       .returning();
 
-    if (deleted.length === 0) {
+    if (deleted.length === 0)
       return res.status(404).json({ error: "Vote not found for this user" });
-    }
 
-    // 2️⃣ Fetch current total votes
-    const [current] = await db
-      .select()
-      .from(votesTable)
-      .where(eq(votesTable.songId, songId));
+    // 2) Adjust total count
+    const [current] = await db.select().from(votesTable).where(eq(votesTable.songId, songId));
 
     if (current) {
       if (current.voteCount > 1) {
-        // Decrement the count
         await db
           .update(votesTable)
           .set({ voteCount: sql`${votesTable.voteCount} - 1` })
           .where(eq(votesTable.songId, songId));
       } else {
-        // Remove the votes row if this was the last vote
         await db.delete(votesTable).where(eq(votesTable.songId, songId));
       }
     }
+
+    // 3) Get new count and emit update
+    const [updated] = await db.select().from(votesTable).where(eq(votesTable.songId, songId));
+    const newCount = updated ? updated.voteCount : 0;
+    io.emit("voteUpdated", { [songId]: newCount });
 
     res.json({ success: true });
   } catch (error) {
@@ -145,7 +370,8 @@ app.delete("/api/user_votes", async (req, res) => {
 });
 
 
-// ---------- Get total votes ----------
+
+// ✅ Fetch total votes
 app.get("/api/votes", async (_req, res) => {
   try {
     const allVotes = await db.select().from(votesTable);
@@ -237,57 +463,7 @@ app.post("/api/artiste_details", async (req, res) => {
 });
 
 
-// Song details upload endpoint
-// app.post("/api/song_details", upload.single("image"), async (req, res) => {
-//   try {
-//     console.log("=== SONG DETAILS ENDPOINT HIT ===");
-//     console.log("Request body:", req.body);
-//     console.log("Uploaded file:", req.file);
 
-//     const { title, name, genre, nationality } = req.body;
-//     const file = req.file;
-
-//     if (!title || !name || !genre || !nationality) {
-//       return res.status(400).json({
-//         success: false,
-//         message: "All fields (title, name, genre, nationality) are required",
-//       });
-//     }
-
-//     // Build full image URL if file exists
-//     const imageUrl = file
-//       ? `${req.protocol}://${req.get("host")}/uploads/${file.filename}`
-//       : null;
-
-//     // Save song details into DB
-//     const [insertedSong] = await db
-//       .insert(songDetailsTable)
-//       .values({
-//         title,
-//         name,
-//         genre,
-//         nationality,
-//         imageUrl,
-//       })
-//       .returning();
-
-//     console.log("✅ Song saved:", insertedSong);
-
-//     res.status(201).json({
-//       success: true,
-//       message: "Song details uploaded successfully",
-//       data: insertedSong,
-//     });
-//   } catch (error) {
-//     console.error("❌ Error saving song details:", error);
-//     res.status(500).json({
-//       success: false,
-//       message: error.message,
-//     });
-//   }
-// });
-
-// Accept JSON { title, name, genre, nationality, imageUrl }
 app.post("/api/song_details", async (req, res) => {
   try {
     const { title, name, genre, nationality, imageUrl } = req.body;
@@ -423,10 +599,6 @@ app.post("/api/check-role", async (req, res) => {
 });
 
 
-// ---------- Start Server ----------
-app.listen(PORT, () => {
-  console.log("Server is running123 on PORT:", PORT);
-});
 
 
 

@@ -9,7 +9,6 @@ import {
   Heart,
   BarChart3,
   User,
-
   LogOut,
   ArrowUp,
   ArrowDown
@@ -22,6 +21,8 @@ import FeaturedCards from "./FeaturedCards";
 import Concerts from "./Concerts";
 import Top10 from "./Top10";
 import { useNavigate, useLocation } from "react-router-dom";
+import { io } from "socket.io-client";
+
 
 const CritiqHomePage = () => {
   // this is the active tab section
@@ -52,6 +53,8 @@ const CritiqHomePage = () => {
   const location = useLocation();
   // logoutLoading
   const [logoutLoading, setLogoutLoading] = useState(false);
+  // websocket connect for real time updates 
+  const socket = io("https://critiq-backend-6v3f.onrender.com");
 
   const isActive = (path) => location.pathname === path;
 
@@ -156,6 +159,17 @@ const CritiqHomePage = () => {
 
     fetchSongs();
   }, []);
+
+
+  useEffect(() => {
+  socket.on("voteUpdated", (updatedVotes) => {
+    setVotes((prev) => ({ ...prev, ...updatedVotes }));
+  });
+
+  return () => {
+    socket.off("voteUpdated");
+  };
+}, []);
 
   // --- Fetch votes
   useEffect(() => {
@@ -390,140 +404,7 @@ const CritiqHomePage = () => {
           </div>
         )}
 
-        {/* {!loadingSongs && !error && tabDisplayedSongs.length > 0 && (
-          <ul className="space-y-4">
-            {tabDisplayedSongs.map((song) => {
-              const voted = userVotes.includes(song.id);
-              const count = votes[song.id] ?? 0;
-
-              return (
-                <li
-                  key={song.id}
-                  className="p-4 bg-[#1c1c27] rounded-lg flex items-center justify-between hover:bg-[#232333] hover:shadow-lg hover:scale-[1.02] transition duration-300 ease-in-out"
-                >
-                  <div className="flex items-center gap-4">
-                    {song.imageUrl ? (
-                      <img
-                        src={song.imageUrl}
-                        alt={song.title}
-                        className="w-16 h-16 object-cover rounded"
-                      />
-                    ) : (
-                      <div className="w-16 h-16 bg-gray-600 rounded" />
-                    )}
-                    <div className="text-left">
-                      <h3 className="font-semibold text-white">
-                        {song.title}
-                      </h3>
-                      <p className="text-sm text-white">{song.name}</p>
-                      <p className="text-xs text-gray-400">
-                        {song.genre || "Unknown Genre"}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-3">
-                    <span className="text-sm text-gray-300">{count}</span>
-                    <TrendingUp
-                      size={28}
-                      className={`cursor-pointer transition-transform duration-200 hover:scale-110 ${
-                        voted
-                          ? "fill-green-500 text-green-500"
-                          : "text-gray-400"
-                      }`}
-                      onClick={() => handleVoteToggle(song.id)}
-                    />
-                    <button
-                      onClick={() => console.log(`Voted for ${song.id}`)}
-                      className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 ${
-                        voted
-                          ? "bg-green-600 scale-110"
-                          : "bg-[#A259FF] hover:bg-[#8F45E3]"
-                      }`}
-                    >
-                      <ArrowUp className="w-5 h-5 text-white" />
-                    </button>
-                  </div>
-                </li>
-              );
-            })}
-          </ul>
-        )} */}
-        
-        {/* {!loadingSongs && !error && tabDisplayedSongs.length > 0 && (
-          <ul className="space-y-4">
-            {tabDisplayedSongs.map((song, index) => {
-              const voted = userVotes.includes(song.id);
-              const count = votes[song.id] ?? 0;
-              const isLastPlace = index === tabDisplayedSongs.length - 1 && tabDisplayedSongs.length > 1;
-
-              return (
-                <li
-                  key={song.id}
-                  className="p-4 bg-[#1c1c27] rounded-lg flex items-center justify-between hover:bg-[#232333] hover:shadow-lg hover:scale-[1.02] transition duration-300 ease-in-out"
-                >
-                  <div className="flex items-center gap-4">
-                    {song.imageUrl ? (
-                      <img
-                        src={song.imageUrl}
-                        alt={song.title}
-                        className="w-16 h-16 object-cover rounded"
-                      />
-                    ) : (
-                      <div className="w-16 h-16 bg-gray-600 rounded" />
-                    )}
-                    <div className="text-left">
-                      <h3 className="font-semibold text-white">
-                        {song.title}
-                      </h3>
-                      <p className="text-sm text-white">{song.name}</p>
-                      <p className="text-xs text-gray-400">
-                        {song.genre || "Unknown Genre"}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-3">
-                    <span className={`text-sm ${isLastPlace ? 'text-red-400' : 'text-gray-300'}`}>{count}</span>
-                    {isLastPlace ? (
-                      <TrendingDown
-                        size={28}
-                        className="text-red-500 cursor-pointer transition-transform duration-200 hover:scale-110"
-                        onClick={() => handleVoteToggle(song.id)}
-                      />
-                    ) : (
-                      <TrendingUp
-                        size={28}
-                        className={`cursor-pointer transition-transform duration-200 hover:scale-110 ${
-                          voted
-                            ? "fill-green-500 text-green-500"
-                            : "text-gray-400"
-                        }`}
-                        onClick={() => handleVoteToggle(song.id)}
-                      />
-                    )}
-                    <button
-                      onClick={() => console.log(`Voted for ${song.id}`)}
-                      className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 ${
-                        isLastPlace
-                          ? "bg-transparent border-2 border-red-500 hover:bg-red-500/10"
-                          : voted
-                          ? "bg-green-600 scale-110"
-                          : "bg-[#A259FF] hover:bg-[#8F45E3]"
-                      }`}
-                    >
-                      {isLastPlace ? (
-                        <ArrowDown className="w-5 h-5 text-red-500" />
-                      ) : (
-                        <ArrowUp className="w-5 h-5 text-white" />
-                      )}
-                    </button>
-                  </div>
-                </li>
-              );
-            })}
-          </ul>
-        )} */}
+   
 
 
 {!loadingSongs && !error && tabDisplayedSongs.length > 0 && (
@@ -632,7 +513,10 @@ const CritiqHomePage = () => {
             className={`text-sm font-bold px-4 py-1 ${
               colorClasses[i % colorClasses.length]
             } text-white rounded-full hover:brightness-110 transition ${
-              selectedGenre === g ? "ring-2 ring-white" : ""
+             
+              selectedGenre === g 
+          ? "ring-4 ring-white shadow-lg scale-110" 
+          : "opacity-40 hover:opacity-100"
             }`}
           >
             {g}
