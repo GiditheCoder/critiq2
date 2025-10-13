@@ -21,29 +21,43 @@ const [loading, setLoading] = useState(true);
     navigate('/uploadhub');
   }
 
-  // probe the useEffect
+  
 useEffect(() => {
   if (!isLoaded || !user) return;
 
-  const fetchSongs = async () => {
+  const fetchSongsAndVotes = async () => {
     try {
+      // 1️⃣ Fetch all songs
+      const { data: songRes } = await axiosClient.get(`/api/song_details`);
+      const songs = songRes?.data || [];
 
-      
-      const { data } = await axiosClient.get(`/api/song_details`);
+      // 2️⃣ Fetch all votes
+      const { data: votesRes } = await axiosClient.get(`/api/votes`);
+      const votes = votesRes || [];
 
-      // Filter only songs uploaded by this artist (assuming your song model includes a userId or artistId field)
-      const userSongs = data.data.filter((song) => song.userId === user.id);
+      // 3️⃣ Merge votes into songs by songId
+      const mergedSongs = songs.map((song) => {
+        const voteRecord = votes.find((v) => v.songId === song.id);
+        return {
+          ...song,
+          votes: voteRecord ? voteRecord.voteCount : 0,
+        };
+      });
+
+      // 4️⃣ Filter songs uploaded by this user
+      const userSongs = mergedSongs.filter((song) => song.userId === user.id);
 
       setSongs(userSongs);
     } catch (error) {
-      console.error("Error fetching songs:", error);
+      console.error("Error fetching songs or votes:", error);
     } finally {
       setLoading(false);
     }
   };
 
-  fetchSongs();
+  fetchSongsAndVotes();
 }, [user, isLoaded]);
+
 
   
   return (
