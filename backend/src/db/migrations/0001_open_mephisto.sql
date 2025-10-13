@@ -1,1 +1,0 @@
-ALTER TABLE "song_details" ALTER COLUMN "image_url" DROP NOT NULL;

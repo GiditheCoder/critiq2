@@ -466,12 +466,16 @@ app.post("/api/artiste_details", async (req, res) => {
 
 app.post("/api/song_details", async (req, res) => {
   try {
-    const { title, name, genre, nationality, imageUrl } = req.body;
+    const { title, name, genre, nationality, imageUrl , userId } = req.body;
+    console.log("🟢 Incoming body:", req.body);
+    console.log("🟢 /api/song_details - headers:", req.headers);
+console.log("🟢 /api/song_details - body keys:", Object.keys(req.body));
+console.log("🟢 /api/song_details - body:", req.body);
 
-    if (!title || !name || !genre || !nationality) {
+    if (!title || !name || !genre || !nationality || !userId) {
       return res.status(400).json({
         success: false,
-        message: "All fields (title, name, genre, nationality) are required",
+        message: "All fields (title, name, genre, nationality, userId) are required",
       });
     }
 
@@ -482,7 +486,9 @@ app.post("/api/song_details", async (req, res) => {
         name,
         genre,
         nationality,
+        userId ,
         imageUrl: imageUrl ?? null,
+        // ✅ include userId here
       })
       .returning();
 
@@ -495,6 +501,8 @@ app.post("/api/song_details", async (req, res) => {
     });
   } catch (error) {
     console.error("❌ Error saving song details:", error);
+    if (error?.cause) console.error("DB Cause:", error.cause);
+if (error?.stack) console.error("Stack:", error.stack);
     res.status(500).json({
       success: false,
       message: error.message,

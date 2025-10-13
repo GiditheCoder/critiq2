@@ -5,15 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1759233444079,
-      "tag": "0000_small_wolfpack",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1759243875507,
-      "tag": "0001_open_mephisto",
+      "when": 1760365661964,
+      "tag": "0000_mixed_gambit",
       "breakpoints": true
     }
   ]

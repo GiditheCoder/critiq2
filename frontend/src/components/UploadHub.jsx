@@ -66,38 +66,70 @@ const UploadHub = () => {
     setFormData((prev) => ({ ...prev, [field]: option ? option.value : "" }));
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError(null);
-    setLoading(true);
 
-    try {
-      if (!uploadedImageUrl) throw new Error("Please upload an image first");
 
-      const res = await fetch("https://critiq-backend-6v3f.onrender.com/api/song_details", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          title: formData.title,
-          name: formData.name,
-          genre: formData.genre,
-          nationality: formData.nationality,
-          imageUrl: uploadedImageUrl,
-        }),
-      });
 
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message || "Upload failed");
+ const handleSubmit = async (e) => {
+  e.preventDefault();
+  setError(null);
+  setLoading(true);
 
-      console.log("✅ Song saved:", data.data);
-      navigate("/successful-upload" , {state:{ songTitle: formData.title , imageUrl: uploadedImageUrl, }}); // Pass the song title to the success page
-    } catch (err) {
-      console.error(err);
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+  if (!user) {
+    alert("User not loaded yet!");
+    return;
+  }
+
+  
+  console.log("🧑‍💻 Submitting:", {
+    title: formData.title,
+    name: user.fullName || formData.name,
+    genre: formData.genre,
+    nationality: formData.nationality,
+    imageUrl: uploadedImageUrl,
+    userId: user.id, // ✅ make sure this exists
+  });
+
+
+  try {
+    if (!uploadedImageUrl) throw new Error("Please upload an image first");
+    if (!user || !user.id) throw new Error("User not authenticated");
+
+    const res = await fetch("https://critiq-backend-6v3f.onrender.com/api/song_details", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        title: formData.title,
+        name: user?.fullName || formData.name,
+        genre: formData.genre,
+        nationality: formData.nationality,
+        imageUrl: uploadedImageUrl,
+        userId: user.id, 
+      }),
+    });
+
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || "Upload failed");
+
+    console.log("✅ Song saved:", data.data);
+    navigate("/successful-upload", {
+      state: { songTitle: formData.title, imageUrl: uploadedImageUrl },
+    });
+  } catch (err) {
+    console.error(err);
+    setError(err.message);
+  } finally {
+    setLoading(false);
+  }
+};
+
+if (!isLoaded || !user) {
+  return (
+    <div className="min-h-screen bg-[#0D0C1D] text-white flex items-center justify-center">
+      <p>Loading...</p>
+    </div>
+  );
+}
+
 
   return (
     <div className="min-h-screen bg-[#0D0C1D] text-white flex flex-col items-center py-10 px-6">
@@ -204,3 +236,6 @@ const UploadHub = () => {
 };
 
 export default UploadHub;
+
+
+

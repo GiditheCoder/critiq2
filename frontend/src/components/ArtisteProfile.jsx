@@ -1,11 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState , useEffect} from 'react';
 import { useUser } from '@clerk/clerk-react';
 import { Settings, Edit, Plus, BarChart3 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import axiosClient from "../api/axiosClient";
+
+
 
 const ArtisteProfile = () => {
    const navigate = useNavigate();
-  const { user } = useUser();
+  const { user, isLoaded} = useUser();
+  const [songs, setSongs] = useState([]);
+const [loading, setLoading] = useState(true);
   const role = user?.unsafeMetadata?.chosenRole;
   const [activeSection, setActiveSection] = useState('songs');
 
@@ -16,16 +21,31 @@ const ArtisteProfile = () => {
     navigate('/uploadhub');
   }
 
+  // probe the useEffect
+useEffect(() => {
+  if (!isLoaded || !user) return;
 
+  const fetchSongs = async () => {
+    try {
 
+      
+      const { data } = await axiosClient.get(`/api/song_details`);
 
-  // Sample data
-  const songs = [
-    { id: 1, title: 'Midnight Bloom', votes: '434,304 votes', cover: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=60&h=60&fit=crop' },
-    { id: 2, title: 'Electric Dreams', votes: '387,428 votes', cover: 'https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae?w=60&h=60&fit=crop' },
-    { id: 3, title: 'Neon Echoes', votes: '268,701 votes', cover: 'https://images.unsplash.com/photo-1459749411175-04bf5292ceea?w=60&h=60&fit=crop' }
-  ];
+      // Filter only songs uploaded by this artist (assuming your song model includes a userId or artistId field)
+      const userSongs = data.data.filter((song) => song.userId === user.id);
 
+      setSongs(userSongs);
+    } catch (error) {
+      console.error("Error fetching songs:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchSongs();
+}, [user, isLoaded]);
+
+  
   return (
     <div className="min-h-screen bg-[#0B0A1F] text-white pb-20">
       {/* Header */}
@@ -54,7 +74,7 @@ const ArtisteProfile = () => {
           </div>
         </div>
 
-        <h2 className="text-2xl font-bold mt-4">{user?.firstName || 'Aria'}</h2>
+       
         <p className="text-gray-400 mt-1">@{user?.username || 'aria_music'}</p>
 
         <div className="mt-3">
@@ -103,32 +123,46 @@ const ArtisteProfile = () => {
 
         {/* Songs Section */}
         {activeSection === 'songs' && (
-          <div>
-            <div className="flex items-center justify-between mb-4" onClick={handleUpload}>
-              <h3 className="text-sm font-semibold text-gray-400 uppercase">My Songs</h3>
-              <button className="text-purple-500 text-sm flex items-center gap-1">
-                <Plus className="w-4 h-4" />
-                Upload New
-              </button>
+  <div>
+    <div className="flex items-center justify-between mb-4" onClick={handleUpload}>
+      <h3 className="text-sm font-semibold text-gray-400 uppercase">My Songs</h3>
+      <button className="text-purple-500 text-sm flex items-center gap-1">
+        <Plus className="w-4 h-4" />
+        Upload New
+      </button>
+    </div>
+
+    {loading ? (
+      <p className="text-gray-400 text-center">Loading songs...</p>
+    ) : songs.length === 0 ? (
+      <p className="text-gray-400 text-center">No songs uploaded yet.</p>
+    ) : (
+      <div className="space-y-3">
+        {songs.map((song) => (
+          <div key={song.id} className="bg-[#252938] rounded-xl p-4 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <img
+                src={song.imageUrl || "https://via.placeholder.com/60"}
+                alt={song.title}
+                className="w-12 h-12 rounded-lg object-cover"
+              />
+              <div>
+                <h4 className="font-semibold text-white">{song.title}</h4>
+                <p className="text-gray-400 text-sm">
+                  {song.votes ? `${song.votes} votes` : "0 votes"}
+                </p>
+              </div>
             </div>
-            <div className="space-y-3">
-              {songs.map((song) => (
-                <div key={song.id} className="bg-[#252938] rounded-xl p-4 flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <img src={song.cover} alt={song.title} className="w-12 h-12 rounded-lg object-cover" />
-                    <div>
-                      <h4 className="font-semibold text-white">{song.title}</h4>
-                      <p className="text-gray-400 text-sm">{song.votes}</p>
-                    </div>
-                  </div>
-                  <button className="p-2 hover:bg-gray-700 rounded-lg transition-colors">
-                    <BarChart3 className="w-5 h-5 text-gray-400" />
-                  </button>
-                </div>
-              ))}
-            </div>
+            <button className="p-2 hover:bg-gray-700 rounded-lg transition-colors">
+              <BarChart3 className="w-5 h-5 text-gray-400" />
+            </button>
           </div>
-        )}
+        ))}
+      </div>
+    )}
+  </div>
+)}
+
 
         {/* Merch Section */}
         {activeSection === 'merch' && (

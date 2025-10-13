@@ -1,5 +1,5 @@
 {
-  "id": "e087ac56-6ff6-4250-9f51-6654bc890449",
+  "id": "97730ffa-a367-41da-b677-82ca5fe46883",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -100,11 +100,17 @@
           "primaryKey": false,
           "notNull": true
         },
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
         "image_url": {
           "name": "image_url",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "created_at": {
           "name": "created_at",
