@@ -12,6 +12,7 @@
   "dependencies": {
     "@clerk/clerk-react": "^5.38.0",
     "@uploadthing/react": "^7.3.3",
+    "axios": "^1.12.2",
     "lucide-react": "^0.544.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",

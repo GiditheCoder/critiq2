@@ -62,7 +62,7 @@ const CritiqHomePage = () => {
     const timer = setTimeout(() => {
       setLoading(false);
       setLoaded(true);
-    }, 1000);
+    }, 20);
     return () => clearTimeout(timer);
   }, []);
 

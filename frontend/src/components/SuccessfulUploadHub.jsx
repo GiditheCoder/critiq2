@@ -9,6 +9,7 @@ import { useNavigate ,  useLocation} from 'react-router-dom';
 const SuccessfulUploadHub = () => {
   const location = useLocation();
   const songTitle = location.state?.songTitle || "Your Track";
+  const imageUrl = location.state?.imageUrl || null; 
   console.log("Song Title:", songTitle); // Debugging line to check the song title
    const navigate = useNavigate();
 
@@ -25,7 +26,7 @@ const SuccessfulUploadHub = () => {
     <div className="min-h-screen bg-[#0f0f1a] flex flex-col items-center justify-center text-center px-4">
       {/* Top Image */}
       <img 
-        src={Arena} 
+        src={imageUrl} 
         alt="Arena Celebration" 
         className="w-full max-w-md rounded-lg shadow-lg mb-6"
       />
