@@ -65,7 +65,7 @@ useEffect(() => {
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-4">
         <div className="w-10"></div>
-        <h1 className="text-xl font-semibold">Profile</h1>
+        <h1 className="text-xl font-semibold">Artiste Profile</h1>
         <button className="p-2 hover:bg-gray-800 rounded-lg transition-colors">
           <Settings className="w-6 h-6 text-white" onClick={handleSettingsClick} />
         </button>
