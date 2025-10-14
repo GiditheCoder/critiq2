@@ -288,7 +288,6 @@ console.log("🟢 /api/song_details - body:", req.body);
         nationality,
         userId ,
         imageUrl: imageUrl ?? null,
-        // ✅ include userId here
       })
       .returning();
 
